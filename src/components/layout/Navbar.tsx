@@ -39,42 +39,55 @@ export default function Navbar() {
   return (
     <>
       {/* ── Desktop top bar ─────────────────────────────────────── */}
-      <header className="hidden md:flex sticky top-0 z-40 h-16 items-center bg-bg-page/90 backdrop-blur-md border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 w-full flex items-center gap-6">
-          {/* Logo */}
-          <Link href="/landing" className="flex items-center gap-2.5 shrink-0">
-            <span className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center text-ivory text-sm font-serif font-medium">
-              S
-            </span>
-            <span className="font-serif font-medium text-lg text-text-primary">SSG104</span>
-          </Link>
+      <header className="hidden md:flex sticky top-0 z-40 py-4 min-h-[4.5rem] items-center bg-bg-page/90 backdrop-blur-md border-b border-border">
+        <div className="max-w-7xl mx-auto px-8 w-full flex items-center justify-between gap-8">
+          <div className="flex items-center gap-8">
+            {/* Logo */}
+            <Link href="/landing" className="flex items-center gap-2.5 shrink-0">
+              <span className="w-9 h-9 rounded-xl bg-brand flex items-center justify-center text-ivory text-sm font-serif font-medium shadow-ring-brand">
+                S
+              </span>
+              <span className="font-serif font-medium text-lg text-text-primary">SSG104</span>
+            </Link>
 
-          {/* Desktop nav */}
-          <nav className="flex items-center gap-1 flex-1">
-            {tabs.map(({ href, label, icon }) => (
-              <Link
-                key={href}
-                href={href}
-                className={[
-                  'flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200',
-                  isActive(href)
-                    ? 'bg-bg-subtle text-text-primary'
-                    : 'text-text-secondary hover:bg-bg-subtle hover:text-text-primary',
-                ].join(' ')}
-              >
-                <span className="text-base">{icon}</span> {label}
-              </Link>
-            ))}
-          </nav>
+            {/* Desktop nav */}
+            <nav className="flex items-center gap-2">
+              {tabs.map(({ href, label, icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={[
+                    'flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200',
+                    isActive(href)
+                      ? 'bg-bg-subtle text-text-primary'
+                      : 'text-text-secondary hover:bg-bg-subtle hover:text-text-primary',
+                  ].join(' ')}
+                >
+                  <span className="text-base">{icon}</span> {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
 
           {/* Auth */}
           {user ? (
             <div className="flex items-center gap-3">
-              <span className="text-xs text-text-tertiary max-w-[140px] truncate">{user.email}</span>
+              <Link 
+                href="/profile" 
+                className="flex items-center gap-2 group px-2 py-1.5 rounded-xl hover:bg-bg-subtle transition-colors"
+                title="Quản lý hồ sơ"
+              >
+                <span className="w-6 h-6 rounded-full bg-brand flex items-center justify-center text-[10px] text-ivory font-serif font-medium">
+                  {(user.email || 'U').charAt(0).toUpperCase()}
+                </span>
+                <span className="text-sm font-medium text-text-secondary group-hover:text-text-primary transition-colors max-w-[140px] truncate">
+                  {user.email}
+                </span>
+              </Link>
               <Button
                 variant="outline"
                 size="sm"
-                className="rounded-xl text-xs border-border text-text-secondary"
+                className="rounded-xl text-xs border-border text-text-secondary hover:bg-bg-subtle"
                 onPress={handleSignOut}
               >
                 Đăng xuất
@@ -103,12 +116,20 @@ export default function Navbar() {
         </Link>
 
         {user ? (
-          <button
-            onClick={handleSignOut}
-            className="text-xs text-text-secondary px-3 py-1.5 rounded-lg border border-border"
-          >
-            Đăng xuất
-          </button>
+          <div className="flex items-center gap-3">
+            <Link 
+              href="/profile" 
+              className="w-7 h-7 rounded-full bg-bg-subtle border border-border flex items-center justify-center text-[10px] text-text-secondary font-medium font-serif"
+            >
+              {(user.email || 'U').charAt(0).toUpperCase()}
+            </Link>
+            <button
+              onClick={handleSignOut}
+              className="text-[11px] text-text-secondary px-3 py-1.5 rounded-lg border border-border bg-bg-card shadow-sm"
+            >
+              Đăng xuất
+            </button>
+          </div>
         ) : (
           <Link
             href="/auth/login"

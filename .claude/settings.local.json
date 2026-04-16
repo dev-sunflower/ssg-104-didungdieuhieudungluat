@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const h = require\\('@heroui/react'\\); console.log\\(Object.keys\\(h\\).filter\\(k => k.toLowerCase\\(\\).includes\\('provider'\\) || k.toLowerCase\\(\\).includes\\('heroui'\\)\\)\\)\")"
+    ]
+  }
+}
