@@ -188,8 +188,6 @@ function DesktopDropdown({
   );
 }
 
-// ─── Mobile Sheet ─────────────────────────────────────────────────────────────
-
 function MobileSheet({
   item,
   open,
@@ -262,8 +260,6 @@ function MobileSheet({
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
-
 export default function Navbar() {
   const pathname = usePathname();
   const { user, role, signOut } = useAuth();
@@ -275,13 +271,23 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ── Desktop top bar ────────────────────────────────────────────── */}
       <header className="hidden md:flex sticky top-0 z-40 py-4 min-h-[4.5rem] items-center bg-bg-page/90 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-8 w-full flex items-center justify-between gap-8">
           <div className="flex items-center gap-8">
-            <Link href="/landing" className="flex items-center gap-2.5 shrink-0">
-              <Image src="/logo.webp" alt="Logo" width={36} height={36} className="rounded-xl" />
-              <span className="font-serif font-medium text-lg text-text-primary">hocluatdema</span>
+            <Link
+              href="/landing"
+              className="flex items-center gap-2.5 shrink-0"
+            >
+              <Image
+                src="/logo.webp"
+                alt="Logo"
+                width={36}
+                height={36}
+                className="rounded-xl"
+              />
+              <span className="font-serif font-medium text-lg text-text-primary">
+                hocluatdema
+              </span>
             </Link>
 
             <nav className="flex items-center gap-1">
@@ -289,7 +295,8 @@ export default function Navbar() {
                 if (item.kind === "link") {
                   const active =
                     pathname === item.href ||
-                    (item.href !== "/landing" && pathname.startsWith(item.href));
+                    (item.href !== "/landing" &&
+                      pathname.startsWith(item.href));
                   const Icon = item.icon;
                   return (
                     <Link
@@ -308,7 +315,11 @@ export default function Navbar() {
                   );
                 }
                 return (
-                  <DesktopDropdown key={item.id} item={item} pathname={pathname} />
+                  <DesktopDropdown
+                    key={item.id}
+                    item={item}
+                    pathname={pathname}
+                  />
                 );
               })}
             </nav>
@@ -319,7 +330,7 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               {role === "admin" && (
                 <Link
-                  href="/admin"
+                  href="/questions"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-border-strong bg-bg-subtle text-text-secondary hover:text-text-primary hover:bg-bg-card transition-colors"
                 >
                   <LuSettings size={13} />
@@ -349,7 +360,10 @@ export default function Navbar() {
             </div>
           ) : (
             <Link href="/auth/login">
-              <Button size="sm" className="bg-brand text-ivory rounded-xl text-sm font-medium px-5">
+              <Button
+                size="sm"
+                className="bg-brand text-ivory rounded-xl text-sm font-medium px-5"
+              >
                 Đăng nhập
               </Button>
             </Link>
@@ -357,10 +371,18 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* ── Mobile top mini-bar ─────────────────────────────────────────── */}
       <header className="md:hidden sticky top-0 z-40 h-14 flex items-center justify-between p-4 bg-bg-page/90 backdrop-blur-md border-b border-border">
-        <Link href="/landing" className="flex items-center gap-2 font-serif font-medium text-text-primary">
-          <Image src="/logo.webp" alt="Logo" width={36} height={36} className="rounded-xl" />
+        <Link
+          href="/landing"
+          className="flex items-center gap-2 font-serif font-medium text-text-primary"
+        >
+          <Image
+            src="/logo.webp"
+            alt="Logo"
+            width={36}
+            height={36}
+            className="rounded-xl"
+          />
           hocluatdema
         </Link>
 
@@ -368,7 +390,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             {role === "admin" && (
               <Link
-                href="/admin"
+                href="/questions"
                 className="flex items-center gap-1 text-[11px] font-medium text-text-secondary px-2.5 py-1.5 rounded-lg border border-border-strong bg-bg-subtle"
               >
                 <LuSettings size={12} />
@@ -389,13 +411,15 @@ export default function Navbar() {
             </button>
           </div>
         ) : (
-          <Link href="/auth/login" className="text-xs font-medium text-ivory bg-brand px-3 py-1.5 rounded-lg">
+          <Link
+            href="/auth/login"
+            className="text-xs font-medium text-ivory bg-brand px-3 py-1.5 rounded-lg"
+          >
             Đăng nhập
           </Link>
         )}
       </header>
 
-      {/* ── Mobile bottom tab bar ───────────────────────────────────────── */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg-page/95 backdrop-blur-md border-t border-border safe-area-bottom">
         <div className="flex items-stretch h-16">
           {navItems.map((item) => {
@@ -457,9 +481,11 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile sheets */}
       {navItems
-        .filter((i): i is Extract<NavItem, { kind: "dropdown" }> => i.kind === "dropdown")
+        .filter(
+          (i): i is Extract<NavItem, { kind: "dropdown" }> =>
+            i.kind === "dropdown",
+        )
         .map((item) => (
           <MobileSheet
             key={item.id}
