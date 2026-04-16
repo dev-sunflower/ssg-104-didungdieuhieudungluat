@@ -1,0 +1,36 @@
+/* Role-based tokens — components use ONLY these */
+@theme {
+  /* Page backgrounds */
+  --color-bg-page: var(--color-parchment);
+  --color-bg-card: var(--color-ivory);
+  --color-bg-elevated: var(--color-pure-white);
+  --color-bg-subtle: var(--color-warm-sand);
+  --color-bg-dark: var(--color-near-black);
+  --color-bg-dark-card: var(--color-dark-surface);
+  --color-bg-dark-elevated: var(--color-dark-warm);
+
+  /* Text */
+  --color-text-primary: var(--color-near-black);
+  --color-text-secondary: var(--color-olive-gray);
+  --color-text-tertiary: var(--color-stone-gray);
+  --color-text-inverted: var(--color-ivory);
+  --color-text-inverted-secondary: var(--color-warm-silver);
+  --color-text-brand: var(--color-terracotta);
+  --color-text-link: var(--color-coral);
+  --color-text-button: var(--color-charcoal-warm);
+
+  /* Borders */
+  --color-border: var(--color-border-cream);
+  --color-border-strong: var(--color-border-warm);
+
+  /* Brand */
+  --color-brand: var(--color-terracotta);
+  --color-brand-hover: var(--color-coral);
+
+  /* Interactive */
+  --color-ring: var(--color-ring-warm);
+  --color-focus: var(--color-focus-blue);
+
+  /* Status */
+  --color-status-error: var(--color-crimson);
+}

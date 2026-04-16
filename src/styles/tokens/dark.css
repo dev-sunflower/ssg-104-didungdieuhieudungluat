@@ -1,0 +1,14 @@
+/* Dark mode overrides — only semantic tokens */
+.dark {
+  --color-bg-page: var(--color-near-black);
+  --color-bg-card: var(--color-dark-surface);
+  --color-bg-elevated: var(--color-dark-warm);
+  --color-bg-subtle: var(--color-dark-surface);
+
+  --color-text-primary: var(--color-ivory);
+  --color-text-secondary: var(--color-warm-silver);
+  --color-text-tertiary: var(--color-stone-gray);
+
+  --color-border: var(--color-border-dark);
+  --color-border-strong: var(--color-dark-warm);
+}
