@@ -1,10 +1,10 @@
-import { SubheadingSm, Caption } from '@/components/ui/Typography'
+import { SubheadingSm, Caption } from "@/components/ui/Typography";
 
 const stats = [
-  { value: '600+', label: 'Câu hỏi thi' },
-  { value: '4',    label: 'Hạng bằng lái' },
-  { value: '100%', label: 'Miễn phí hoàn toàn' },
-]
+  { value: "200+", label: "Câu hỏi thi" },
+  { value: "1", label: "Hạng bằng lái" },
+  { value: "100%", label: "Miễn phí hoàn toàn" },
+];
 
 export function StatsStrip() {
   return (
@@ -20,5 +20,5 @@ export function StatsStrip() {
         </div>
       </div>
     </section>
-  )
+  );
 }

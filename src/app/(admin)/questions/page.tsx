@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import DeleteQuestionButton from './DeleteQuestionButton'
+import { LuCircleHelp, LuPlus, LuTriangleAlert, LuInbox } from 'react-icons/lu'
 
 export default async function AdminQuestionsPage() {
   const supabase = await createClient()
@@ -15,16 +16,20 @@ export default async function AdminQuestionsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="heading-sub-lg text-text-primary">❓ Quản lý câu hỏi</h1>
+          <h1 className="heading-sub-lg text-text-primary flex items-center gap-2">
+            <LuCircleHelp size={26} className="text-text-secondary" />
+            Quản lý câu hỏi
+          </h1>
           <p className="text-text-secondary text-sm mt-1">
             {questions?.length ?? 0} câu hỏi
           </p>
         </div>
         <Link
           href="/admin/questions/new"
-          className="px-4 py-2 rounded-xl bg-brand hover:bg-brand-hover text-ivory text-sm font-medium shadow-ring-brand transition-colors flex items-center gap-2"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand hover:bg-brand-hover text-ivory text-sm font-medium shadow-ring-brand transition-colors"
         >
-          ➕ Thêm câu hỏi
+          <LuPlus size={15} />
+          Thêm câu hỏi
         </Link>
       </div>
 
@@ -61,7 +66,9 @@ export default async function AdminQuestionsPage() {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     {q.is_critical ? (
-                      <span className="text-crimson font-medium text-xs">⚠️ Có</span>
+                      <span className="flex items-center gap-1 text-crimson font-medium text-xs">
+                        <LuTriangleAlert size={13} /> Có
+                      </span>
                     ) : (
                       <span className="text-text-tertiary text-xs">—</span>
                     )}
@@ -82,7 +89,7 @@ export default async function AdminQuestionsPage() {
               {(!questions || questions.length === 0) && (
                 <tr>
                   <td colSpan={6} className="px-4 py-12 text-center text-text-tertiary">
-                    <div className="text-3xl mb-2">📭</div>
+                    <LuInbox size={32} className="mx-auto mb-2 text-text-tertiary opacity-50" />
                     Chưa có câu hỏi nào. Hãy thêm câu hỏi đầu tiên!
                   </td>
                 </tr>

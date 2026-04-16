@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { LicenseType, QuestionOption } from '@/lib/types/database'
+import { LuArrowLeft, LuPlus, LuPencil, LuTriangleAlert, LuSave } from 'react-icons/lu'
 
 const TOPICS = ['Biển báo', 'Tốc độ', 'Quyền ưu tiên', 'Sa hình', 'Văn hóa giao thông', 'Kỹ thuật lái xe', 'Pháp luật', 'Khác']
 const OPTION_KEYS = ['A', 'B', 'C', 'D']
@@ -29,14 +30,12 @@ export default function QuestionFormPage() {
     topic: '',
   })
 
-  // Load license types
   useEffect(() => {
     supabase.from('license_types').select('*').order('code').then(({ data }) => {
       if (data) setLicenseTypes(data)
     })
   }, [supabase])
 
-  // Load existing question
   useEffect(() => {
     if (isNew) return
     setLoading(true)
@@ -105,12 +104,16 @@ export default function QuestionFormPage() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.back()}
-          className="text-sm text-text-secondary hover:text-text-primary"
+          className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
         >
-          ← Quay lại
+          <LuArrowLeft size={15} />
+          Quay lại
         </button>
-        <h1 className="heading-sub-lg text-text-primary">
-          {isNew ? '➕ Thêm câu hỏi mới' : '✏️ Chỉnh sửa câu hỏi'}
+        <h1 className="heading-sub-lg text-text-primary flex items-center gap-2">
+          {isNew
+            ? <><LuPlus size={22} className="text-text-secondary" /> Thêm câu hỏi mới</>
+            : <><LuPencil size={20} className="text-text-secondary" /> Chỉnh sửa câu hỏi</>
+          }
         </h1>
       </div>
 
@@ -231,7 +234,10 @@ export default function QuestionFormPage() {
             className="w-4 h-4 rounded accent-crimson border-border cursor-pointer"
           />
           <div>
-            <span className="text-sm font-medium text-text-primary">⚠️ Câu điểm liệt</span>
+            <span className="flex items-center gap-1.5 text-sm font-medium text-text-primary">
+              <LuTriangleAlert size={14} className="text-crimson" />
+              Câu điểm liệt
+            </span>
             <p className="text-xs text-text-tertiary">Trả lời sai câu này sẽ tự động trượt</p>
           </div>
         </label>
@@ -241,9 +247,15 @@ export default function QuestionFormPage() {
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-2.5 rounded-xl bg-brand hover:bg-brand-hover text-ivory font-medium text-sm transition-colors disabled:opacity-60 shadow-ring-brand"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand hover:bg-brand-hover text-ivory font-medium text-sm transition-colors disabled:opacity-60 shadow-ring-brand"
           >
-            {saving ? 'Đang lưu...' : isNew ? '➕ Thêm câu hỏi' : '💾 Lưu thay đổi'}
+            {saving ? (
+              'Đang lưu...'
+            ) : isNew ? (
+              <><LuPlus size={15} /> Thêm câu hỏi</>
+            ) : (
+              <><LuSave size={15} /> Lưu thay đổi</>
+            )}
           </button>
           <button
             type="button"

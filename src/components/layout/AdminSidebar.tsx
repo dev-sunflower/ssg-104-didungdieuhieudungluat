@@ -2,11 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import type { IconType } from 'react-icons'
+import { LuLayoutDashboard, LuCircleHelp, LuCreditCard, LuArrowLeft } from 'react-icons/lu'
 
-const adminLinks = [
-  { href: '/admin',                label: 'Tổng quan',      icon: '◈', exact: true },
-  { href: '/admin/questions',      label: 'Câu hỏi',        icon: '❓' },
-  { href: '/admin/license-types',  label: 'Hạng bằng lái',  icon: '🪪' },
+const adminLinks: { href: string; label: string; icon: IconType; exact?: boolean }[] = [
+  { href: '/admin',               label: 'Tổng quan',     icon: LuLayoutDashboard, exact: true },
+  { href: '/admin/questions',     label: 'Câu hỏi',       icon: LuCircleHelp },
+  { href: '/admin/license-types', label: 'Hạng bằng lái', icon: LuCreditCard },
 ]
 
 export default function AdminSidebar() {
@@ -29,7 +31,7 @@ export default function AdminSidebar() {
 
       {/* Nav */}
       <nav className="flex flex-col gap-1 p-3 flex-1">
-        {adminLinks.map(({ href, label, icon, exact }) => {
+        {adminLinks.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href)
           return (
             <Link
@@ -42,7 +44,7 @@ export default function AdminSidebar() {
                   : 'text-text-secondary hover:bg-bg-subtle hover:text-text-primary',
               ].join(' ')}
             >
-              <span>{icon}</span>
+              <Icon size={16} />
               {label}
             </Link>
           )
@@ -55,7 +57,8 @@ export default function AdminSidebar() {
           href="/landing"
           className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-text-tertiary hover:text-text-secondary hover:bg-bg-subtle transition-colors"
         >
-          ← Về trang chính
+          <LuArrowLeft size={13} />
+          Về trang chính
         </Link>
       </div>
     </aside>

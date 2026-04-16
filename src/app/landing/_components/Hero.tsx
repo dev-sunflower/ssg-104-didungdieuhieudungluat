@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { DisplayHeading, BodyLg } from '@/components/ui/Typography'
+import Link from "next/link";
+import { DisplayHeading, BodyLg } from "@/components/ui/Typography";
 
 export function Hero() {
   return (
@@ -11,14 +11,13 @@ export function Hero() {
         </p>
 
         <DisplayHeading className="text-[2rem] sm:text-[3rem] md:text-[4rem] mb-6">
-          Đi đúng đường,{' '}
-          <span className="text-brand">Hiểu đúng luật.</span>
+          Đi đúng điệu, <span className="text-brand">Hiểu đúng luật.</span>
         </DisplayHeading>
 
         <BodyLg className="max-w-xl mx-auto mb-10">
-          Ôn luyện lý thuyết lái xe{' '}
-          <strong className="text-text-primary font-medium">A1, A2, B1, B2</strong>{' '}
-          miễn phí — flashcard, thi thử và trò chơi tương tác.
+          Ôn luyện lý thuyết lái xe{" "}
+          <strong className="text-text-primary font-medium">A1</strong> miễn phí
+          — flashcard, thi thử và trò chơi tương tác.
         </BodyLg>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -37,5 +36,5 @@ export function Hero() {
         </div>
       </div>
     </section>
-  )
+  );
 }

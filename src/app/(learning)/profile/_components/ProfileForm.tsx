@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
+import { LuCircleCheck, LuCircleX } from 'react-icons/lu'
 
 export function ProfileForm({ initialName }: { initialName: string | null }) {
   const [name, setName] = useState(initialName ?? '')
@@ -10,6 +12,7 @@ export function ProfileForm({ initialName }: { initialName: string | null }) {
   const [message, setMessage] = useState('')
   const router = useRouter()
   const supabase = createClient()
+  const { user } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -17,7 +20,6 @@ export function ProfileForm({ initialName }: { initialName: string | null }) {
     setMessage('')
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Không tìm thấy phiên đăng nhập')
 
       const { error } = await supabase
@@ -27,10 +29,10 @@ export function ProfileForm({ initialName }: { initialName: string | null }) {
 
       if (error) throw error
 
-      setMessage('✨ Đã cập nhật thành công')
+      setMessage('ok')
       router.refresh()
     } catch (err: any) {
-      setMessage('❌ Cập nhật thất bại: ' + (err.message || 'Lỗi không xác định'))
+      setMessage('err:' + (err.message || 'Lỗi không xác định'))
     } finally {
       setLoading(false)
     }
@@ -53,11 +55,15 @@ export function ProfileForm({ initialName }: { initialName: string | null }) {
 
       <div className="flex items-center justify-between gap-4 mt-2">
         <p className="text-sm">
-          {message.includes('✨') ? (
-            <span className="text-brand font-medium">{message}</span>
-          ) : (
-            <span className="text-status-error font-medium">{message}</span>
-          )}
+          {message === 'ok' ? (
+            <span className="flex items-center gap-1.5 text-brand font-medium">
+              <LuCircleCheck size={14} /> Đã cập nhật thành công
+            </span>
+          ) : message.startsWith('err:') ? (
+            <span className="flex items-center gap-1.5 text-status-error font-medium">
+              <LuCircleX size={14} /> Cập nhật thất bại: {message.slice(4)}
+            </span>
+          ) : null}
         </p>
         <button
           type="submit"
