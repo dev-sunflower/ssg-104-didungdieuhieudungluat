@@ -22,9 +22,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SSG104 — Đi Đúng Điều Hiểu Đúng Luật",
+  title: "Học Luật Dễ Mà",
   description:
-    "Nền tảng ôn luyện lý thuyết lái xe trực tuyến: câu hỏi thi sát hạch hạng A1, B2, C... Flashcard, đề thi thử và trò chơi tương tác.",
+    "Nền tảng ôn luyện lý thuyết lái xe trực tuyến: câu hỏi thi sát hạch hạng A1 và Flashcard, đề thi thử và trò chơi tương tác.",
 };
 
 export default function RootLayout({
