@@ -72,7 +72,7 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               <span className="text-xs text-text-tertiary max-w-[140px] truncate">{user.email}</span>
               <Button
-                variant="bordered"
+                variant="outline"
                 size="sm"
                 className="rounded-xl text-xs border-border text-text-secondary"
                 onPress={handleSignOut}
