@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Card, Chip } from '@heroui/react'
 import type { Question } from '@/lib/types/database'
@@ -13,79 +13,78 @@ interface QuestionCardProps {
 export default function QuestionCard({ question, selectedAnswer, onAnswer, showResult }: QuestionCardProps) {
   const getOptionStyle = (key: string): string => {
     if (!showResult) {
-      if (selectedAnswer === key)
-        return 'border-brand bg-warm-sand/60 text-text-primary'
-      return 'border-border text-text-secondary hover:border-border-strong hover:bg-bg-subtle active:scale-[0.99]'
+      if (selectedAnswer === key) {
+        return 'border-[#F4A616] bg-[#F4A616]/15 text-text-primary'
+      }
+      return 'border-[#1E1E1E]/12 text-text-secondary hover:border-[#F4A616]/70 hover:bg-[#FFF4D6] active:scale-[0.99]'
     }
-    if (key === question.correct_answer)
-      return 'border-brand bg-warm-sand/40 text-text-primary'
-    if (key === selectedAnswer)
+
+    if (key === question.correct_answer) {
+      return 'border-[#4ECDC4] bg-[#4ECDC4]/12 text-text-primary'
+    }
+
+    if (key === selectedAnswer) {
       return 'border-crimson bg-crimson/5 text-crimson'
-    return 'border-border text-text-tertiary opacity-60'
+    }
+
+    return 'border-[#1E1E1E]/12 text-text-tertiary opacity-60'
   }
 
   return (
-    <Card className="shadow-whisper border border-border bg-bg-card">
-      <Card.Content className="p-5 flex flex-col gap-4">
-        {/* Badges */}
-        <div className="flex items-center gap-2 flex-wrap">
+    <Card className="rounded-3xl border border-[#1E1E1E]/10 bg-white shadow-[0_14px_36px_rgba(30,30,30,0.08)]">
+      <Card.Content className="flex flex-col gap-4 p-5">
+        <div className="flex flex-wrap items-center gap-2">
           {question.question_number && (
             <span className="text-xs font-mono text-text-tertiary">#{question.question_number}</span>
           )}
           {question.topic && (
-            <Chip size="sm" className="bg-bg-subtle border border-border text-text-secondary text-[10px] font-medium">
+            <Chip size="sm" className="border border-[#1E1E1E]/10 bg-[#FFF4D6] text-[10px] font-medium text-text-secondary">
               {question.topic}
             </Chip>
           )}
           {question.is_critical && (
-            <Chip size="sm" className="bg-crimson/10 border border-crimson/20 text-crimson text-[10px] font-medium">
+            <Chip size="sm" className="border border-crimson/20 bg-crimson/10 text-[10px] font-medium text-crimson">
               ⚠ Điểm liệt
             </Chip>
           )}
         </div>
 
-        {/* Image */}
         {question.image_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={question.image_url}
             alt="Hình minh họa"
-            className="max-h-44 object-contain rounded-xl border border-border mx-auto"
+            className="mx-auto max-h-44 rounded-xl border border-[#1E1E1E]/12 bg-[#FFFCF2] object-contain"
           />
         )}
 
-        {/* Content */}
-        <p className="text-base font-medium text-text-primary leading-relaxed">
-          {question.content}
-        </p>
+        <p className="text-base font-medium leading-relaxed text-text-primary">{question.content}</p>
 
-        {/* Options */}
         <div className="flex flex-col gap-2">
           {question.options.map((opt) => (
             <button
               key={opt.key}
               onClick={() => !showResult && onAnswer(opt.key)}
               disabled={showResult}
-              className={`flex items-start gap-3 w-full text-left p-3.5 rounded-xl border transition-all duration-200 ${getOptionStyle(opt.key)}`}
+              className={`flex w-full items-start gap-3 rounded-2xl border p-3.5 text-left transition-all duration-200 ${getOptionStyle(opt.key)}`}
             >
-              <span className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg bg-bg-subtle border border-border font-medium text-xs text-text-secondary">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#1E1E1E]/10 bg-[#FFF4D6] text-xs font-medium text-text-secondary">
                 {opt.key}
               </span>
-              <span className="text-sm leading-relaxed flex-1">{opt.text}</span>
+              <span className="flex-1 text-sm leading-relaxed">{opt.text}</span>
               {showResult && opt.key === question.correct_answer && (
-                <span className="ml-auto shrink-0 text-brand font-bold">✓</span>
+                <span className="ml-auto shrink-0 font-bold text-[#22B8A8]">✓</span>
               )}
               {showResult && opt.key === selectedAnswer && opt.key !== question.correct_answer && (
-                <span className="ml-auto shrink-0 text-crimson font-bold">✗</span>
+                <span className="ml-auto shrink-0 font-bold text-crimson">✕</span>
               )}
             </button>
           ))}
         </div>
 
-        {/* Explanation */}
         {showResult && question.explanation && (
-          <div className="p-4 bg-bg-subtle border border-border-strong rounded-xl text-sm text-text-secondary leading-relaxed">
-            💡 <strong className="text-text-primary font-medium">Giải thích:</strong> {question.explanation}
+          <div className="rounded-2xl border border-[#1E1E1E]/10 bg-[#FFF4D6] p-4 text-sm leading-relaxed text-text-secondary">
+            💡 <strong className="font-medium text-text-primary">Giải thích:</strong> {question.explanation}
           </div>
         )}
       </Card.Content>

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+﻿import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Card } from '@heroui/react'
@@ -8,17 +8,15 @@ import { LuChartBar, LuTag, LuSettings, LuRotateCcw } from 'react-icons/lu'
 export default async function ProfilePage() {
   const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (!user) {
     redirect('/auth/login')
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
 
   const { data: exams } = await supabase
     .from('exam_sessions')
@@ -27,64 +25,54 @@ export default async function ProfilePage() {
     .order('created_at', { ascending: false })
 
   const totalExams = exams?.length || 0
-  const passedExams = exams?.filter(e => e.passed).length || 0
+  const passedExams = exams?.filter((e) => e.passed).length || 0
   const passRate = totalExams > 0 ? Math.round((passedExams / totalExams) * 100) : 0
 
   const displayInitial = (profile?.display_name || user.email || 'U').charAt(0).toUpperCase()
   const formattedDate = new Date(user.created_at).toLocaleDateString('vi-VN', {
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
   })
 
   return (
     <div className="flex flex-col gap-10">
-
-      {/* ── 1. Hero Overview ─────────────────────────────── */}
-      <section className="flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">
-        <div className="shrink-0 w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-brand flex items-center justify-center text-ivory text-4xl sm:text-5xl font-serif font-medium shadow-whisper border-4 border-bg-page">
-          {displayInitial}
-        </div>
-        <div className="flex flex-col justify-center gap-1 mt-2 md:mt-4">
-          <h1 className="heading-sub text-text-primary">
-            {profile?.display_name || 'Học viên ẩn danh'}
-          </h1>
-          <p className="text-text-secondary text-sm">{user.email}</p>
-          <p className="text-text-tertiary text-xs mt-2 font-medium tracking-wide">
-            THÀNH VIÊN TỪ {formattedDate.toUpperCase()}
-          </p>
+      <section className="rounded-3xl border border-[#1E1E1E]/10 bg-[linear-gradient(145deg,#FFF4D6_0%,#FFE8A8_100%)] p-6 md:p-8">
+        <div className="flex flex-col items-center gap-6 text-center md:flex-row md:items-start md:text-left">
+          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-[#F4A616] text-4xl font-serif font-medium text-[#1E1E1E] shadow-md sm:h-28 sm:w-28 sm:text-5xl">
+            {displayInitial}
+          </div>
+          <div className="mt-1 flex flex-col gap-1 md:mt-2">
+            <h1 className="text-3xl font-extrabold text-[#1E1E1E]">{profile?.display_name || 'Học viên ẩn danh'}</h1>
+            <p className="text-sm text-[#1E1E1E]/75">{user.email}</p>
+            <p className="mt-2 text-xs font-medium tracking-wide text-[#1E1E1E]/55">THÀNH VIÊN TỪ {formattedDate.toUpperCase()}</p>
+          </div>
         </div>
       </section>
 
-      {/* ── 2. Stats ─────────────────────────────────────── */}
       <section>
-        <h2 className="heading-feature text-text-primary mb-4 flex items-center gap-2">
-          <LuChartBar size={18} className="text-text-secondary" />
-          Tổng quan học tập
+        <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-[#1E1E1E]">
+          <LuChartBar size={18} className="text-[#1E1E1E]/65" /> Tổng quan học tập
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card className="border-border bg-bg-card shadow-whisper p-5">
-            <p className="text-sm text-text-secondary mb-1">Số đề thi đã làm</p>
-            <p className="text-3xl font-serif text-text-primary">{totalExams}</p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <Card className="border-[#1E1E1E]/10 bg-white p-5 shadow-[0_10px_30px_rgba(30,30,30,0.06)]">
+            <p className="mb-1 text-sm text-text-secondary">Số đề thi đã làm</p>
+            <p className="font-serif text-3xl text-text-primary">{totalExams}</p>
           </Card>
-          <Card className="border-border bg-bg-card shadow-whisper p-5">
-            <p className="text-sm text-text-secondary mb-1">Số đề thi đạt</p>
-            <p className="text-3xl font-serif text-brand">{passedExams}</p>
+          <Card className="border-[#1E1E1E]/10 bg-white p-5 shadow-[0_10px_30px_rgba(30,30,30,0.06)]">
+            <p className="mb-1 text-sm text-text-secondary">Số đề thi đạt</p>
+            <p className="font-serif text-3xl text-[#F4A616]">{passedExams}</p>
           </Card>
-          <Card className="border-border bg-bg-card shadow-whisper p-5">
-            <p className="text-sm text-text-secondary mb-1">Tỉ lệ hoàn thành</p>
-            <p className="text-3xl font-serif text-text-primary">{passRate}%</p>
+          <Card className="border-[#1E1E1E]/10 bg-white p-5 shadow-[0_10px_30px_rgba(30,30,30,0.06)]">
+            <p className="mb-1 text-sm text-text-secondary">Tỉ lệ hoàn thành</p>
+            <p className="font-serif text-3xl text-text-primary">{passRate}%</p>
           </Card>
         </div>
       </section>
 
-      {/* ── 3. History + Settings ────────────────────────── */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-        {/* Lịch sử thi */}
-        <div className="lg:col-span-7 flex flex-col gap-4">
-          <h2 className="heading-feature text-text-primary mb-2 flex items-center gap-2">
-            <LuTag size={16} className="text-text-secondary" />
-            Lịch sử đề thi
+      <section className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
+        <div className="flex flex-col gap-4 lg:col-span-7">
+          <h2 className="mb-2 flex items-center gap-2 text-xl font-bold text-[#1E1E1E]">
+            <LuTag size={16} className="text-[#1E1E1E]/65" /> Lịch sử đề thi
           </h2>
 
           <div className="flex flex-col gap-3">
@@ -92,71 +80,59 @@ export default async function ProfilePage() {
               exams.slice(0, 5).map((exam) => {
                 const lcCode = (exam.license_types as any)?.code || '—'
                 const date = new Date(exam.created_at).toLocaleDateString('vi-VN', {
-                  hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit'
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  day: '2-digit',
+                  month: '2-digit',
                 })
 
                 return (
-                  <Card key={exam.id} className="border-border bg-bg-card shadow-sm p-4 flex flex-row items-center gap-4">
-                    <div className={[
-                      'shrink-0 w-12 h-12 rounded-full flex flex-col items-center justify-center font-bold text-xs',
-                      exam.passed ? 'bg-warm-sand text-brand' : 'bg-crimson/10 text-crimson'
-                    ].join(' ')}>
+                  <Card key={exam.id} className="flex flex-row items-center gap-4 border-[#1E1E1E]/10 bg-white p-4 shadow-sm">
+                    <div
+                      className={[
+                        'flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-full text-xs font-bold',
+                        exam.passed ? 'bg-[#F4A616]/20 text-[#1E1E1E]' : 'bg-crimson/10 text-crimson',
+                      ].join(' ')}
+                    >
                       {exam.passed ? 'ĐẠT' : 'TRƯỢT'}
                     </div>
 
-                    <div className="flex-1 flex flex-col min-w-0 gap-0.5">
+                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-text-primary text-sm truncate">
-                          Đề thi hạng {lcCode}
-                        </p>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-subtle text-text-tertiary">
-                          {date}
-                        </span>
+                        <p className="truncate text-sm font-medium text-text-primary">Đề thi hạng {lcCode}</p>
+                        <span className="rounded bg-[#FFF4D6] px-1.5 py-0.5 text-[10px] text-text-tertiary">{date}</span>
                       </div>
-                      <p className="text-xs text-text-secondary">
-                        Hệ thống ghi nhận: {exam.score}/{exam.total_questions} điểm
-                      </p>
+                      <p className="text-xs text-text-secondary">Hệ thống ghi nhận: {exam.score}/{exam.total_questions} điểm</p>
                     </div>
 
-                    <Link
-                      href="/exam"
-                      className="shrink-0 text-text-tertiary hover:text-brand px-2 transition-colors"
-                      title="Thi lại"
-                    >
+                    <Link href="/exam" className="shrink-0 px-2 text-text-tertiary transition-colors hover:text-[#F4A616]" title="Thi lại">
                       <LuRotateCcw size={18} />
                     </Link>
                   </Card>
                 )
               })
             ) : (
-              <div className="py-8 px-6 text-center border border-dashed border-border rounded-2xl bg-bg-card/50">
-                <p className="text-text-tertiary text-sm mb-4">Bạn chưa tham gia bài thi nào.</p>
+              <div className="rounded-2xl border border-dashed border-[#1E1E1E]/18 bg-white/70 px-6 py-8 text-center">
+                <p className="mb-4 text-sm text-text-tertiary">Bạn chưa tham gia bài thi nào.</p>
                 <Link
                   href="/exam"
-                  className="inline-flex bg-brand text-ivory text-sm font-medium px-5 py-2.5 rounded-xl shadow-ring-brand hover:bg-brand-hover transition-colors"
+                  className="inline-flex rounded-2xl bg-[#F4A616] px-5 py-2.5 text-sm font-semibold text-[#1E1E1E] transition-colors hover:bg-[#e59b11]"
                 >
                   Thi thử ngay
                 </Link>
               </div>
             )}
 
-            {exams && exams.length > 5 && (
-              <p className="text-xs text-text-tertiary text-center mt-2 italic">
-                (Đang hiển thị 5 bài thi gần nhất)
-              </p>
-            )}
+            {exams && exams.length > 5 && <p className="mt-2 text-center text-xs italic text-text-tertiary">(Đang hiển thị 5 bài thi gần nhất)</p>}
           </div>
         </div>
 
-        {/* Cài đặt */}
-        <Card className="lg:col-span-5 border-border bg-bg-card shadow-whisper p-6 sticky top-24">
-          <h2 className="heading-feature text-text-primary mb-6 flex items-center gap-2">
-            <LuSettings size={16} className="text-text-secondary" />
-            Cài đặt tài khoản
+        <Card className="sticky top-24 border-[#1E1E1E]/10 bg-white p-6 shadow-[0_10px_30px_rgba(30,30,30,0.06)] lg:col-span-5">
+          <h2 className="mb-6 flex items-center gap-2 text-xl font-bold text-[#1E1E1E]">
+            <LuSettings size={16} className="text-[#1E1E1E]/65" /> Cài đặt tài khoản
           </h2>
           <ProfileForm initialName={profile?.display_name || ''} />
         </Card>
-
       </section>
     </div>
   )
