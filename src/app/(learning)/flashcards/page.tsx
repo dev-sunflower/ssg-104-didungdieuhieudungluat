@@ -100,6 +100,7 @@ export default function FlashcardsPage() {
                 value={selectedTopic}
                 onChange={(key) => setSelectedTopic(key as string)}
                 placeholder="Tất cả chủ đề"
+                aria-label="Filter chủ đề"
               >
                 <Label className="text-[0.75rem] font-medium text-text-tertiary mb-1.5 block">
                   Chủ đề
@@ -152,7 +153,10 @@ export default function FlashcardsPage() {
         </div>
       ) : questions.length === 0 ? (
         <div className="text-center py-20">
-          <LuInbox size={48} className="mx-auto mb-3 text-text-tertiary opacity-40" />
+          <LuInbox
+            size={48}
+            className="mx-auto mb-3 text-text-tertiary opacity-40"
+          />
           <p className="font-medium text-text-primary">Không có câu hỏi</p>
           <p className="text-sm text-text-tertiary mt-1">
             Thử chọn chủ đề khác hoặc thêm câu hỏi qua Admin

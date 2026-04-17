@@ -330,7 +330,7 @@ export default function Navbar() {
             <div className="flex items-center gap-3">
               {role === "admin" && (
                 <Link
-                  href="/questions"
+                  href="/admin"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-border-strong bg-bg-subtle text-text-secondary hover:text-text-primary hover:bg-bg-card transition-colors"
                 >
                   <LuSettings size={13} />
