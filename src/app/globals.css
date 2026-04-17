@@ -65,3 +65,26 @@ body {
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* Landing interactions */
+@keyframes blob-float {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.03); }
+}
+
+.blob-float {
+  animation: blob-float 5.5s ease-in-out infinite;
+}
+
+.reveal-up {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 520ms ease,
+    transform 520ms ease;
+}
+
+.reveal-up.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}

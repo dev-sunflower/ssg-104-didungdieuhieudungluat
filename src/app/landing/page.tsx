@@ -4,6 +4,7 @@ import { StatsStrip } from './_components/StatsStrip'
 import { FeaturesSection } from './_components/FeaturesSection'
 import { LicenseTypesSection } from './_components/LicenseTypesSection'
 import { HowItWorksSection } from './_components/HowItWorksSection'
+import { SocialProofSection } from './_components/SocialProofSection'
 import { CtaBanner } from './_components/CtaBanner'
 import { SiteFooter } from './_components/SiteFooter'
 
@@ -16,6 +17,7 @@ export default function LandingPage() {
       <FeaturesSection />
       <LicenseTypesSection />
       <HowItWorksSection />
+      <SocialProofSection />
       <CtaBanner />
       <SiteFooter />
     </div>

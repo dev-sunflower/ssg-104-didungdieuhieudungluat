@@ -1,13 +1,12 @@
 export function SiteFooter() {
   return (
-    <footer className="bg-near-black border-t border-border-dark py-12">
-      <div className="max-w-6xl mx-auto px-6 text-center">
-        <p className="font-serif font-medium text-ivory text-lg mb-2">SSG104</p>
-        <p className="text-[0.88rem] text-warm-silver mb-1">Đi Đúng Điều Hiểu Đúng Luật</p>
-        <p className="text-[0.88rem] text-stone-gray">
-          Dữ liệu câu hỏi theo quy định Bộ Giao thông Vận tải Việt Nam · © 2025
-        </p>
+    <footer className="bg-[#1E1E1E] py-10">
+      <div className="mx-auto max-w-6xl px-6 text-center">
+        <p className="text-xl font-bold text-white">SSG104</p>
+        <p className="mt-1 text-sm text-white/75">Đi Đúng Điều Hiểu Đúng Luật</p>
+        <p className="mt-2 text-xs text-white/55">© 2026 · Học luật theo kiểu game, ngắn gọn và dễ nhớ</p>
       </div>
     </footer>
   )
 }
+

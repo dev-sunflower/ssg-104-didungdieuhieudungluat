@@ -1,61 +1,58 @@
-import Link from 'next/link'
-import { SectionHeading, Body } from '@/components/ui/Typography'
-import { Section } from '@/components/ui/Section'
+import { Reveal } from '@/components/ui/Reveal'
 
 const features = [
   {
-    title: 'Flashcard ôn luyện',
-    desc: 'Lật thẻ từng câu — hiển thị đáp án và giải thích chi tiết. Lọc theo hạng bằng và chủ đề.',
-    href: '/flashcards',
-    cta: 'Học ngay',
-    badge: 'Phổ biến',
+    icon: '⚡',
+    title: 'Học 5 phút',
+    desc: 'Không cần ngồi hàng giờ. Mỗi ngày vài phút vẫn tăng đều.',
+    color: '#F4A616',
   },
   {
-    title: 'Thi thử sát hạch',
-    desc: 'Đề thi mô phỏng theo đúng cấu trúc Bộ GTVT. Chấm điểm tự động, có câu điểm liệt.',
-    href: '/exam',
-    cta: 'Luyện thi',
-    badge: 'Hiệu quả',
+    icon: '🎯',
+    title: 'Case thực tế',
+    desc: 'Tập trung vào câu hỏi có khả năng gặp ngoài đường.',
+    color: '#FF6B6B',
   },
   {
-    title: 'Trò chơi biển báo',
-    desc: 'Nhận biết biển báo theo thời gian. Học mà chơi, chơi mà học!',
-    href: '/road-signs',
-    cta: 'Xem trước',
-    badge: 'Sắp ra mắt',
+    icon: '🧠',
+    title: 'Nhớ lâu',
+    desc: 'Học theo cơ chế lặp lại thông minh và phản hồi tức thì.',
+    color: '#4ECDC4',
+  },
+  {
+    icon: '🔥',
+    title: 'Tracking tiến bộ',
+    desc: 'Biết mình đang ở đâu để không học mơ hồ.',
+    color: '#1E1E1E',
   },
 ]
 
 export function FeaturesSection() {
   return (
-    <Section dark id="features">
-      <div className="text-center mb-14">
-        <SectionHeading className="text-ivory text-[2rem] md:text-[3.25rem]">
-          Tất cả công cụ<br />bạn cần
-        </SectionHeading>
+    <section className="bg-[#FFF4D6] py-14 md:py-20">
+      <div className="mx-auto max-w-6xl px-6">
+        <Reveal className="mx-auto mb-10 max-w-3xl text-center">
+          <h2 className="text-3xl font-bold text-[#1E1E1E] md:text-4xl">Đủ giá trị để bạn tin tưởng</h2>
+        </Reveal>
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((feature, idx) => (
+            <Reveal key={feature.title} delayMs={idx * 90}>
+              <article className="h-full rounded-[24px] border-2 border-[#1E1E1E]/10 bg-white p-6 shadow-[0_10px_30px_rgba(30,30,30,0.06)] transition duration-200 hover:-translate-y-1.5 hover:shadow-[0_20px_38px_rgba(30,30,30,0.12)]">
+                <span
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-2xl text-2xl"
+                  style={{ backgroundColor: `${feature.color}20` }}
+                >
+                  {feature.icon}
+                </span>
+                <h3 className="mt-4 text-xl font-bold text-[#1E1E1E]">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#1E1E1E]/70">{feature.desc}</p>
+              </article>
+            </Reveal>
+          ))}
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {features.map((f) => (
-          <div
-            key={f.title}
-            className="bg-bg-dark-card border border-border-dark rounded-2xl p-8 flex flex-col gap-5 shadow-whisper"
-          >
-            <span className="text-[0.63rem] font-medium uppercase tracking-[0.5px] text-text-inverted-secondary">
-              {f.badge}
-            </span>
-            <div className="flex flex-col gap-3 flex-1">
-              <h3 className="heading-feature text-ivory">{f.title}</h3>
-              <Body className="text-warm-silver leading-relaxed">{f.desc}</Body>
-            </div>
-            <Link
-              href={f.href}
-              className="inline-flex items-center justify-center w-full rounded-xl border border-border-dark text-ivory py-2.5 text-sm font-medium hover:bg-dark-warm transition-colors"
-            >
-              {f.cta} →
-            </Link>
-          </div>
-        ))}
-      </div>
-    </Section>
+    </section>
   )
 }
+
