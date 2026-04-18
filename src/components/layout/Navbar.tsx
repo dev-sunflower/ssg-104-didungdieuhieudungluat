@@ -11,6 +11,7 @@ import {
   LuLayers,
   LuFileText,
   LuGamepad2,
+  LuTrophy,
 } from "react-icons/lu";
 
 // ─── Nav structure ────────────────────────────────────────────────────────────

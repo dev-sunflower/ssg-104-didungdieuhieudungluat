@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { Button, Card, Chip, Spinner } from '@heroui/react'
 import QuestionCard from '@/components/ui/QuestionCard'
+import Leaderboard from './_components/Leaderboard'
 import { createClient } from '@/lib/supabase/client'
 import type { LicenseType, Question } from '@/lib/types/database'
-import { LuPartyPopper, LuFrown, LuTriangleAlert, LuRotateCcw, LuClipboard, LuTarget } from 'react-icons/lu'
+import { LuPartyPopper, LuFrown, LuTriangleAlert, LuRotateCcw, LuClipboard, LuTarget, LuTrophy } from 'react-icons/lu'
 
 function ExamContent() {
   const supabase = createClient()
@@ -15,6 +16,7 @@ function ExamContent() {
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [currentIndex, setCurrentIndex] = useState(0)
   const [submitted, setSubmitted] = useState(false)
+  const [showLeaderboard, setShowLeaderboard] = useState(false)
   const [loading, setLoading] = useState(false)
   const [started, setStarted] = useState(false)
 
@@ -55,11 +57,11 @@ function ExamContent() {
   if (submitted) {
     const correct = questions.filter((q) => answers[q.id] === q.correct_answer).length
     const hasCriticalFail = questions.some((q) => q.is_critical && answers[q.id] && answers[q.id] !== q.correct_answer)
-    const passed = !hasCriticalFail && !!a1Type && correct >= a1Type.pass_score
-    const pct = Math.round((correct / questions.length) * 100)
+    const scoreValue = correct // Or however you want to calculate points
 
     return (
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-8">
+        {/* Kết quả thi */}
         <Card className={`overflow-hidden rounded-3xl border bg-white shadow-[0_14px_34px_rgba(30,30,30,0.09)] ${passed ? 'border-[#4ECDC4]' : 'border-crimson/50'}`}>
           <div className={`h-2 ${passed ? 'bg-[#4ECDC4]' : 'bg-crimson'}`} />
           <Card.Content className="p-6 text-center">
@@ -90,24 +92,40 @@ function ExamContent() {
           </Card.Content>
         </Card>
 
-        <h3 className="text-xl font-bold text-[#1E1E1E]">Xem lại đáp án</h3>
-        {questions.map((q, i) => (
-          <div key={q.id}>
-            <p className="mb-2 text-xs font-mono text-text-tertiary">Câu {i + 1}</p>
-            <QuestionCard question={q} selectedAnswer={answers[q.id] ?? null} onAnswer={() => {}} showResult />
+        {/* Bảng xếp hạng - Nhúng trực tiếp tại đây */}
+        {a1Type && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <Leaderboard 
+              score={scoreValue} 
+              licenseType={a1Type} 
+              onClose={() => {}} // Không cần nút đóng khi nhúng trực tiếp
+            />
           </div>
-        ))}
+        )}
 
+        {/* Nút thi lại */}
         <Button
           fullWidth
           onPress={() => {
             setStarted(false)
             setSubmitted(false)
+            setShowLeaderboard(false)
           }}
           className="flex items-center justify-center gap-2 rounded-2xl bg-[#F4A616] py-3.5 font-medium text-[#1E1E1E] hover:bg-[#e59b11]"
         >
-          <LuRotateCcw size={15} /> Thi lại
+          <LuRotateCcw size={15} /> Thi lại đề khác
         </Button>
+
+        {/* Xem lại đáp án */}
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold text-[#1E1E1E]">Xem lại đáp án</h3>
+          {questions.map((q, i) => (
+            <div key={q.id}>
+              <p className="mb-2 text-xs font-mono text-text-tertiary">Câu {i + 1}</p>
+              <QuestionCard question={q} selectedAnswer={answers[q.id] ?? null} onAnswer={() => {}} showResult />
+            </div>
+          ))}
+        </div>
       </div>
     )
   }

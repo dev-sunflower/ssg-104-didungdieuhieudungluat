@@ -1,272 +1,223 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button, Input, Card, RadioGroup, Radio } from "@heroui/react";
-import { LuGamepad2, LuTrophy, LuTimer, LuZap, LuArrowRight, LuChevronLeft } from "react-icons/lu";
+import { Button, Input, Card } from "@heroui/react";
+import { LuGamepad2, LuTrophy, LuTimer, LuZap, LuArrowRight, LuChevronLeft, LuStar, LuTarget, LuMedal } from "react-icons/lu";
 import { Reveal } from "@/components/ui/Reveal";
 import Link from "next/link";
 
 type GameState = "START" | "PLAYING" | "RESULT";
 
+// Dữ liệu Demo mẫu để luôn đẹp và không lỗi
+const MOCK_LEADERBOARD = [
+  { id: "1", name: "Nam Kỹ Năng", score: 4500, rank: 1, title: "Huyền thoại" },
+  { id: "2", name: "Minh Thần Tốc", score: 4200, rank: 2, title: "Huyền thoại" },
+  { id: "3", name: "Linh Phản Xạ", score: 3900, rank: 3, title: "Huyền thoại" },
+  { id: "4", name: "Huy Biển Báo", score: 3500, rank: 4, title: "Chiến binh" },
+  { id: "5", name: "Đạt G-Speed", score: 3100, rank: 5, title: "Chiến binh" },
+];
+
 export default function RoadSignsGame() {
   const [gameState, setGameState] = useState<GameState>("START");
   const [playerName, setPlayerName] = useState("");
-  const [gameMode, setGameMode] = useState("classic");
   const [score, setScore] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
-  // Load name from localStorage on mount
   useEffect(() => {
+    setMounted(true);
     const savedName = localStorage.getItem("playerName");
-    if (savedName) {
-      setPlayerName(savedName);
-    }
+    if (savedName) setPlayerName(savedName);
   }, []);
 
   const handleStartGame = () => {
     if (!playerName.trim()) return;
-    
-    // Sanitize and save name
-    let finalName = playerName.trim().substring(0, 15);
-    
-    // Add suffix if name is short or to make it unique-ish
-    if (!finalName.includes('#')) {
-        finalName += "#" + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    }
-    
-    setPlayerName(finalName);
-    localStorage.setItem("playerName", finalName);
+    localStorage.setItem("playerName", playerName.trim());
     setGameState("PLAYING");
   };
 
-  const handleFinish = () => {
-    setGameState("RESULT");
-  };
+  if (!mounted) return null;
 
+  // --- MÀN HÌNH BẮT ĐẦU (KÈM XẾP HẠNG) ---
   if (gameState === "START") {
     return (
-      <div className="min-h-[85vh] flex items-center justify-center p-4">
-        <Reveal>
-          <Card className="max-w-2xl w-full rounded-[48px] border-none shadow-[0_40px_100px_rgba(0,0,0,0.15)] overflow-hidden bg-bg-card">
-            <div className="bg-[linear-gradient(135deg,#F4A616_0%,#FFD700_100%)] p-12 text-[#1E1E1E] relative overflow-hidden">
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-[#1E1E1E] p-2.5 rounded-2xl text-white shadow-lg">
-                    <LuGamepad2 size={24} />
+      <div className="min-h-[85vh] flex items-center justify-center p-4 md:p-8">
+        <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+          
+          {/* CỘT TRÁI: NHẬP THÔNG TIN */}
+          <Reveal>
+            <Card className="h-full rounded-[48px] border-none shadow-[0_40px_100px_rgba(0,0,0,0.15)] overflow-hidden bg-white flex flex-col">
+              <div className="bg-[linear-gradient(135deg,#F4A616_0%,#FFD700_100%)] p-12 text-[#1E1E1E] relative overflow-hidden shrink-0">
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-[#1E1E1E] p-2.5 rounded-2xl text-white"><LuGamepad2 size={24} /></div>
+                    <span className="text-xs font-black uppercase tracking-[0.3em] opacity-70">Mini Game v1.0</span>
                   </div>
-                  <span className="text-xs font-black uppercase tracking-[0.3em] opacity-70">Mini Game v1.0</span>
+                  <h1 className="text-5xl font-black leading-tight mb-4 italic">Biển báo<br/>đường bộ</h1>
+                  <p className="text-[#1E1E1E]/80 text-base font-bold bg-white/30 inline-block px-5 py-2 rounded-2xl backdrop-blur-sm shadow-sm">
+                     ⚡ Nhìn nhanh, chọn đúng, leo Top!
+                  </p>
                 </div>
-                <h1 className="text-5xl font-black leading-tight mb-4">Biển báo<br/>đường bộ</h1>
-                <p className="text-[#1E1E1E]/80 text-base font-bold bg-white/30 inline-block px-5 py-2 rounded-2xl backdrop-blur-sm shadow-sm">
-                   ⚡ Nhìn nhanh, chọn đúng, leo Top!
-                </p>
+                <LuZap className="absolute -right-12 -bottom-12 opacity-10 rotate-12" size={280} />
               </div>
-              <div className="absolute -right-12 -bottom-12 opacity-10 rotate-12">
-                <LuZap size={280} />
-              </div>
-            </div>
-            
-            <div className="p-12 space-y-10">
-              <div className="space-y-5">
-                <div className="flex items-center justify-between ml-1">
-                    <label className="text-sm font-black text-[#1E1E1E] uppercase tracking-[0.2em]">Danh tính của bạn</label>
-                    <span className="text-[11px] font-bold text-text-tertiary">Tối đa 15 ký tự</span>
+              
+              <div className="p-10 space-y-8 flex-1 flex flex-col justify-center">
+                <div className="space-y-4">
+                  <label className="text-xs font-black text-[#1E1E1E]/40 uppercase tracking-[0.2em] ml-1">Danh tính của bạn</label>
+                  <Input
+                    placeholder="Nhập tên của bạn..."
+                    size="lg"
+                    variant="flat"
+                    value={playerName}
+                    onChange={(e) => setPlayerName(e.target.value)}
+                    className="font-black text-2xl"
+                    onKeyDown={(e) => e.key === "Enter" && handleStartGame()}
+                  />
                 </div>
-                <Input
-                  placeholder="Nhập tên của bạn..."
-                  size="lg"
-                  variant="flat"
-                  value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value)}
-                  classNames={{
-                    input: "font-black text-2xl placeholder:font-bold placeholder:text-text-tertiary px-4",
-                    inputWrapper: "h-20 rounded-[24px] bg-bg-subtle focus-within:ring-4 focus-within:ring-brand/20 transition-all shadow-inner border-none"
-                  }}
-                  onKeyDown={(e) => e.key === "Enter" && handleStartGame()}
-                />
-              </div>
 
-              <div className="space-y-4">
-                <label className="text-sm font-black text-[#1E1E1E] uppercase tracking-wider ml-1">Chế độ chơi</label>
-                <div className="grid grid-cols-2 gap-4">
-                    <button 
-                        onClick={() => setGameMode('classic')}
-                        className={`p-4 rounded-[24px] border-3 transition-all flex flex-col items-center gap-2 ${gameMode === 'classic' ? 'border-brand bg-brand/10 shadow-lg shadow-brand/10' : 'border-bg-subtle bg-bg-subtle/50 opacity-60 hover:opacity-100'}`}
-                    >
-                        <LuTimer size={24} className={gameMode === 'classic' ? 'text-brand' : ''} />
-                        <span className="font-black text-xs uppercase">Classic</span>
-                    </button>
-                    <button 
-                        onClick={() => setGameMode('survival')}
-                        className={`p-4 rounded-[24px] border-3 transition-all flex flex-col items-center gap-2 ${gameMode === 'survival' ? 'border-brand bg-brand/10 shadow-lg shadow-brand/10' : 'border-bg-subtle bg-bg-subtle/50 opacity-60 hover:opacity-100'}`}
-                    >
-                        <LuZap size={24} className={gameMode === 'survival' ? 'text-brand' : ''} />
-                        <span className="font-black text-xs uppercase">Survival</span>
-                    </button>
-                </div>
-              </div>
-
-              <div className="pt-4">
                 <Button 
-                  className="w-full h-18 rounded-[28px] bg-[#1E1E1E] text-white font-black text-xl shadow-2xl shadow-black/20 hover:scale-[1.03] active:scale-95 transition-all flex items-center justify-center gap-3 group"
+                  className="h-20 rounded-[28px] bg-[#1E1E1E] text-white font-black text-xl shadow-2xl hover:scale-[1.03] active:scale-95 transition-all w-full flex items-center justify-center gap-3 group"
                   onPress={handleStartGame}
                   isDisabled={!playerName.trim()}
                 >
-                  BẮT ĐẦU CHƠI
-                  <LuArrowRight className="group-hover:translate-x-1 transition-transform" />
+                  BẮT ĐẦU CHƠI <LuArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </Button>
-                
-                <div className="mt-8 flex items-center justify-center gap-6">
-                    <Link href="/leaderboard" className="flex items-center gap-2 text-xs font-black text-text-tertiary hover:text-brand transition-colors uppercase tracking-widest">
-                        <LuTrophy size={14} />
-                        Xếp hạng
-                    </Link>
-                    <div className="w-1 h-1 rounded-full bg-border" />
-                    <button className="text-xs font-black text-text-tertiary hover:text-brand transition-colors uppercase tracking-widest">
-                        Cách chơi
-                    </button>
+              </div>
+            </Card>
+          </Reveal>
+
+          {/* CỘT PHẢI: BẢNG XẾP HẠNG */}
+          <Reveal>
+            <Card className="h-full rounded-[48px] border-none shadow-[0_40px_100px_rgba(0,0,0,0.15)] overflow-hidden bg-[#1E1E1E] text-white flex flex-col">
+              <div className="p-10 md:p-12 flex flex-col h-full">
+                <div className="flex items-center justify-between mb-10">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-[#F4A616] p-3 rounded-2xl rotate-12 shadow-lg shadow-[#F4A616]/20">
+                      <LuTrophy size={28} className="text-[#1E1E1E]" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-black tracking-tighter uppercase italic leading-none">Bảng Vàng</h2>
+                      <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mt-1">Huyền thoại phản xạ</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/5 px-4 py-2 rounded-2xl border border-white/5 flex items-center gap-3">
+                    <LuTarget className="text-[#F4A616]" size={16} />
+                    <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Top 12%</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                  {MOCK_LEADERBOARD.map((item, idx) => (
+                    <div 
+                      key={item.id} 
+                      className="grid grid-cols-12 items-center px-6 py-4 bg-white/5 rounded-3xl border border-white/5 hover:bg-white/10 transition-all group"
+                    >
+                      <div className="col-span-2">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm shadow-sm ${
+                          idx === 0 ? "bg-[#FFD700] text-[#1E1E1E]" : 
+                          idx === 1 ? "bg-[#E0E0E0] text-[#1E1E1E]" : 
+                          idx === 2 ? "bg-[#CD7F32] text-[#1E1E1E]" : 
+                          "bg-white/10 text-white/40"
+                        }`}>
+                          {item.rank}
+                        </div>
+                      </div>
+                      <div className="col-span-6 flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-black text-[10px] text-white/60 border border-white/10 shrink-0">
+                          {item.name.charAt(0)}
+                        </div>
+                        <div className="truncate">
+                          <p className="font-bold text-sm truncate">{item.name}</p>
+                          <p className="text-[8px] font-black uppercase text-[#F4A616]/70 tracking-widest">{item.title}</p>
+                        </div>
+                      </div>
+                      <div className="col-span-4 text-right flex items-center justify-end gap-2">
+                        <span className="text-lg font-black tabular-nums">{item.score.toLocaleString()}</span>
+                        <LuStar size={12} className="fill-[#F4A616] text-[#F4A616]" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-white/5 text-center">
+                    <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">Cập nhật mỗi 5 giây</p>
                 </div>
               </div>
-            </div>
-          </Card>
-        </Reveal>
+            </Card>
+          </Reveal>
+
+        </div>
       </div>
     );
   }
 
+  // --- MÀN HÌNH CHƠI ---
   if (gameState === "PLAYING") {
     return (
-      <div className="min-h-[95vh] flex flex-col items-center p-4 max-w-5xl mx-auto w-full relative">
-        {/* Fixed HUD */}
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-4xl z-50">
-            <div className="bg-white/95 backdrop-blur-2xl p-4 md:p-6 rounded-[40px] border-2 border-white shadow-[0_30px_60px_rgba(0,0,0,0.12)] flex items-center justify-between">
-                <div className="flex items-center gap-4 md:gap-8">
-                    <div className="bg-brand/10 px-6 py-3 rounded-3xl border border-brand/20">
-                        <p className="text-[10px] font-black text-brand uppercase tracking-widest leading-none mb-1.5">Score</p>
-                        <p className="text-2xl md:text-4xl font-black text-[#1E1E1E] tabular-nums leading-none">{score.toLocaleString()}</p>
-                    </div>
-                    <div className="bg-[#FF6B6B]/10 px-6 py-3 rounded-3xl border border-[#FF6B6B]/20 hidden sm:block">
-                        <p className="text-[10px] font-black text-[#FF6B6B] uppercase tracking-widest leading-none mb-1.5">Combo</p>
-                        <p className="text-2xl md:text-4xl font-black text-[#FF6B6B] flex items-center gap-1 leading-none">
-                            x12 <LuZap size={20} className="fill-[#FF6B6B]" />
-                        </p>
+      <div className="min-h-[90vh] flex flex-col items-center justify-center p-4">
+        <div className="bg-[#1E1E1E] p-8 rounded-[40px] text-white w-full max-w-4xl shadow-2xl relative overflow-hidden border-2 border-white/5">
+            <div className="flex justify-between items-center mb-12 relative z-10">
+                <div className="flex gap-6">
+                    <div className="text-center bg-white/5 px-6 py-3 rounded-2xl border border-white/5">
+                        <p className="text-[8px] font-black uppercase text-white/30 tracking-widest mb-1">Score</p>
+                        <p className="text-3xl font-black tabular-nums leading-none">{score}</p>
                     </div>
                 </div>
-                
-                <div className="flex items-center gap-5">
-                    <div className="text-right">
-                        <p className="text-[10px] font-black text-text-tertiary uppercase tracking-widest leading-none mb-1.5">Time Left</p>
-                        <p className="text-2xl md:text-4xl font-black text-[#1E1E1E] tabular-nums leading-none">00:45</p>
-                    </div>
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-[28px] bg-[#1E1E1E] flex items-center justify-center text-white shadow-2xl">
-                        <LuTimer size={36} />
-                    </div>
+                <div className="w-16 h-16 rounded-2xl bg-[#F4A616] flex items-center justify-center text-[#1E1E1E] shadow-lg shadow-[#F4A616]/20">
+                    <LuTimer size={32} />
                 </div>
             </div>
-            {/* Progress Bar */}
-            <div className="mx-12 h-2 bg-bg-subtle rounded-b-full overflow-hidden border-x border-b border-border">
-                <div className="h-full bg-brand w-[75%] transition-all duration-1000 shadow-[0_0_15px_rgba(244,166,22,0.5)]" />
-            </div>
-        </div>
 
-        {/* Game Area */}
-        <div className="w-full flex-1 flex flex-col items-center justify-center gap-14 mt-32">
-            <Reveal>
-                <div className="relative group">
-                    <div className="absolute inset-0 bg-brand blur-[100px] opacity-30 group-hover:opacity-40 transition-opacity" />
-                    <div className="w-64 h-64 md:w-80 md:h-80 bg-white rounded-[72px] shadow-[0_50px_100px_rgba(0,0,0,0.2)] border-[16px] border-brand flex items-center justify-center p-10 relative z-10 transition-transform hover:scale-110 active:scale-95 will-change-transform">
-                        <div className="w-full h-full bg-[#1E1E1E] rounded-full flex items-center justify-center text-white text-7xl font-black ring-[16px] ring-white shadow-inner">
-                            (!)
-                        </div>
-                    </div>
+            <div className="flex flex-col items-center gap-10 relative z-10">
+                <div className="w-48 h-48 bg-white rounded-[48px] flex items-center justify-center p-8 shadow-[0_0_50px_rgba(244,166,22,0.3)]">
+                    <div className="w-full h-full bg-[#1E1E1E] rounded-full flex items-center justify-center text-white text-5xl font-black italic">(!)</div>
                 </div>
-            </Reveal>
-
-            <div className="w-full max-w-4xl">
-                <p className="text-center font-black text-[#1E1E1E] uppercase tracking-[0.3em] text-sm mb-8 animate-pulse">Biển này báo gì? 🤔</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {[
-                        "Nguy hiểm phía trước",
-                        "Đoạn đường hay xảy ra tai nạn",
-                        "Chú ý chướng ngại vật",
-                        "Đường bị thu hẹp"
-                    ].map((option, idx) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                    {["Nguy hiểm", "Cấm đi", "Chướng ngại", "Hẹp đường"].map((opt, i) => (
                         <Button 
-                            key={idx}
-                            className="w-full h-24 rounded-[32px] bg-white border-3 border-border/60 hover:border-brand hover:bg-brand/5 hover:scale-[1.03] active:scale-[0.97] font-bold text-text-primary transition-all text-left justify-start px-10 shadow-md hover:shadow-2xl hover:shadow-brand/15 group touch-manipulation will-change-transform"
+                            key={i}
+                            className="h-20 rounded-3xl bg-white/5 border border-white/10 hover:border-[#F4A616] hover:bg-white/10 text-xl font-bold transition-all text-left justify-start px-8"
                             onPress={() => {
-                                setScore(s => s + 100);
-                                if (score > 400) handleFinish();
+                                setScore(s => s + 500);
+                                if (score >= 2000) setGameState("RESULT");
                             }}
                         >
-                            <span className="w-12 h-12 rounded-2xl bg-bg-subtle group-hover:bg-brand/20 group-hover:text-brand flex items-center justify-center text-lg mr-6 transition-colors font-black">{String.fromCharCode(65 + idx)}</span>
-                            <span className="text-xl">{option}</span>
+                            <span className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center mr-4 font-black">{String.fromCharCode(65+i)}</span>
+                            {opt}
                         </Button>
                     ))}
                 </div>
             </div>
-
-            <Button 
-                variant="light" 
-                className="mt-8 font-black text-text-tertiary uppercase tracking-[0.2em] text-xs hover:text-[#FF6B6B] transition-colors"
-                onPress={() => setGameState("START")}
-            >
-                Dừng cuộc chơi
-            </Button>
+            <LuGamepad2 className="absolute -right-20 -bottom-20 text-white/5 rotate-12" size={400} />
         </div>
       </div>
     );
   }
 
+  // --- MÀN HÌNH KẾT QUẢ ---
   if (gameState === "RESULT") {
     return (
         <div className="min-h-[90vh] flex items-center justify-center p-4">
             <Reveal>
-                <Card className="max-w-2xl w-full rounded-[56px] border-none shadow-[0_50px_120px_rgba(0,0,0,0.2)] overflow-hidden bg-bg-card">
+                <Card className="max-w-2xl w-full rounded-[56px] border-none shadow-[0_50px_120px_rgba(0,0,0,0.2)] overflow-hidden bg-bg-card flex flex-col items-stretch">
                     <div className="bg-[#1E1E1E] p-16 text-white text-center relative overflow-hidden">
-                        <div className="relative z-10">
-                            <div className="w-28 h-28 bg-brand rounded-[40px] flex items-center justify-center mx-auto mb-8 rotate-12 shadow-2xl shadow-brand/40">
-                                <LuTrophy size={56} className="text-[#1E1E1E]" />
-                            </div>
-                            <h2 className="text-base font-black uppercase tracking-[0.4em] text-brand mb-4">Kết quả cuối cùng</h2>
-                            <p className="text-7xl font-black mb-4 tabular-nums">{score.toLocaleString()}</p>
-                            <p className="text-white/50 font-black uppercase tracking-[0.2em] text-xs">Tổng điểm đạt được</p>
+                        <div className="w-24 h-24 bg-[#F4A616] rounded-[32px] flex items-center justify-center mx-auto mb-8 rotate-12 shadow-2xl shadow-[#F4A616]/30">
+                            <LuTrophy size={48} className="text-[#1E1E1E]" />
                         </div>
-                        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(244,166,22,0.2),transparent_70%)]" />
+                        <h2 className="text-xs font-black uppercase tracking-[0.4em] text-[#F4A616] mb-4">Màn chơi kết thúc</h2>
+                        <p className="text-7xl font-black mb-4 tabular-nums italic leading-none">{score}</p>
+                        <p className="text-white/30 font-black uppercase text-[10px] tracking-widest">Tổng điểm đạt được</p>
                     </div>
 
-                    <div className="p-12">
-                        <div className="flex items-center justify-between p-8 rounded-[40px] bg-bg-subtle mb-10 border border-border/50 shadow-inner">
-                            <div className="text-center flex-1 border-r border-border/60">
-                                <p className="text-xs font-black text-text-tertiary uppercase tracking-widest mb-2">Thứ hạng</p>
-                                <p className="text-4xl font-black text-[#1E1E1E]">#12</p>
-                            </div>
-                            <div className="text-center flex-1">
-                                <p className="text-xs font-black text-text-tertiary uppercase tracking-widest mb-2">Chính xác</p>
-                                <p className="text-4xl font-black text-[#1E1E1E]">94%</p>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <Link href="/leaderboard">
-                                <Button className="w-full h-20 rounded-[28px] bg-brand text-[#1E1E1E] font-black text-xl shadow-xl shadow-brand/20 hover:scale-105 transition-all">
-                                    XẾP HẠNG
-                                </Button>
-                            </Link>
-                            <Button 
-                                variant="bordered" 
-                                className="w-full h-20 rounded-[28px] border-3 border-border font-black text-xl hover:bg-bg-subtle transition-all"
-                                onPress={() => {
-                                    setScore(0);
-                                    setGameState("PLAYING");
-                                }}
-                            >
-                                CHƠI LẠI
-                            </Button>
-                        </div>
-
-                        <Link href="/landing" className="flex items-center justify-center gap-2 mt-8 text-xs font-black text-text-tertiary hover:text-brand transition-colors uppercase tracking-widest">
-                            <LuChevronLeft size={16} />
-                            Về trang chủ
+                    <div className="p-10 space-y-4">
+                        <Button className="h-20 rounded-[28px] bg-[#F4A616] text-[#1E1E1E] font-black text-xl shadow-xl shadow-[#F4A616]/20 hover:scale-105 transition-all w-full" onPress={() => setGameState("PLAYING")}>
+                            THỬ LẠI NGAY
+                        </Button>
+                        <Button variant="bordered" className="h-20 rounded-[28px] border-3 border-[#1E1E1E]/10 font-black text-xl hover:bg-bg-subtle transition-all w-full" onPress={() => setGameState("START")}>
+                            VỀ MENU CHÍNH
+                        </Button>
+                        <Link href="/landing" className="flex items-center justify-center gap-2 pt-4 text-xs font-black text-text-tertiary hover:text-[#F4A616] transition-colors uppercase tracking-widest">
+                            <LuChevronLeft size={16} /> Về trang chủ
                         </Link>
                     </div>
                 </Card>

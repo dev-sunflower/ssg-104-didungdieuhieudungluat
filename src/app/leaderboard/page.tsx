@@ -1,204 +1,134 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button, Card, Tabs, Tab, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip } from "@heroui/react";
-import { LuTrophy, LuTimer, LuStar, LuSearch, LuChevronLeft } from "react-icons/lu";
-import { Reveal } from "@/components/ui/Reveal";
+import { LuTrophy, LuStar, LuChevronLeft, LuTarget, LuMedal } from "react-icons/lu";
 import Link from "next/link";
 
-const mockLeaderboard = [
-  { rank: 1, name: "Anh#42", score: 2450, time: "0:45", date: "2026-04-18" },
-  { rank: 2, name: "Minh Quân", score: 2100, time: "0:52", date: "2026-04-18" },
-  { rank: 3, name: "Thảo_cute", score: 1980, time: "0:48", date: "2026-04-17" },
-  { rank: 4, name: "Đạt G", score: 1850, time: "1:02", date: "2026-04-18" },
-  { rank: 5, name: "Hoàng Gia", score: 1720, time: "0:55", date: "2026-04-15" },
-  { rank: 6, name: "Bảo Ngọc", score: 1600, time: "1:10", date: "2026-04-18" },
-  { rank: 7, name: "Sơn Tùng", score: 1550, time: "1:05", date: "2026-04-16" },
+// Dữ liệu DEMO mẫu
+const MOCK_DATA = [
+  { id: "1", name: "Nguyễn Văn Nam", score: 25, rank: 1, title: "Huyền thoại" },
+  { id: "2", name: "Trần Minh Huy", score: 24, rank: 2, title: "Huyền thoại" },
+  { id: "3", name: "Lê Thị Linh", score: 23, rank: 3, title: "Huyền thoại" },
+  { id: "4", name: "Hoàng Anh Tuấn", score: 21, rank: 4, title: "Chiến binh" },
+  { id: "5", name: "Phạm Đức Minh", score: 19, rank: 5, title: "Chiến binh" },
 ];
 
 export default function LeaderboardPage() {
-  const [filter, setFilter] = useState("today");
-  const [playerName, setPlayerName] = useState("");
+  const [selectedTab, setSelectedType] = useState("A1");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const savedName = localStorage.getItem("playerName");
-    if (savedName) setPlayerName(savedName);
+    setMounted(true);
   }, []);
 
-  // Mock checking if current player is in the list
-  const isCurrentPlayer = (name: string) => playerName === name;
+  if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-bg-page pb-20">
-      <div className="bg-[linear-gradient(135deg,#1E1E1E_0%,#333333_100%)] py-16 md:py-24 text-white relative overflow-hidden mb-[-60px]">
-        <div className="max-w-5xl mx-auto px-6 relative z-10">
-          <Link href="/landing" className="inline-flex items-center gap-2 text-white/50 hover:text-brand transition-colors mb-8 font-black text-xs uppercase tracking-widest">
-            <LuChevronLeft size={18} />
-            Quay lại trang chủ
+    <div className="min-h-screen bg-[#F5F4ED] pb-20 font-sans">
+      {/* Header Demo */}
+      <div className="bg-[#1E1E1E] py-16 text-white mb-[-40px]">
+        <div className="max-w-4xl mx-auto px-6">
+          <Link href="/landing" className="inline-flex items-center gap-2 text-white/50 hover:text-[#F4A616] mb-8 font-bold text-xs uppercase tracking-widest transition-colors">
+            <LuChevronLeft size={18} /> Quay lại trang chủ
           </Link>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div>
-              <div className="flex items-center gap-4 mb-6">
-                <div className="bg-brand p-3 rounded-[24px] shadow-2xl shadow-brand/20 rotate-12">
-                  <LuTrophy size={32} className="text-[#1E1E1E]" />
-                </div>
-                <h1 className="text-5xl md:text-6xl font-black tracking-tighter">Bảng Xếp Hạng</h1>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="flex items-center gap-4">
+              <div className="bg-[#F4A616] p-3 rounded-2xl rotate-12 shadow-lg shadow-[#F4A616]/20">
+                <LuTrophy size={32} className="text-[#1E1E1E]" />
               </div>
-              <p className="text-white/60 font-bold text-lg max-w-md leading-relaxed">
-                Những cao thủ đã chinh phục biển báo. <span className="text-brand">Bạn đang đứng ở đâu?</span>
-              </p>
+              <h1 className="text-4xl md:text-5xl font-black tracking-tighter italic">BẢNG VÀNG CAO THỦ</h1>
             </div>
             
-            <div className="flex items-center gap-5 bg-white/5 backdrop-blur-xl p-6 rounded-[32px] border border-white/10 shadow-2xl">
-                <div className="w-14 h-14 rounded-2xl bg-brand flex items-center justify-center text-[#1E1E1E] shadow-lg shadow-brand/20">
-                    <LuStar size={28} className="fill-[#1E1E1E]" />
-                </div>
-                <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Thứ hạng của bạn</p>
-                    <p className="font-black text-2xl text-white">
-                        {playerName ? (
-                            <span className="flex items-center gap-2">
-                                #84 <span className="text-sm font-bold text-white/40">{playerName}</span>
-                            </span>
-                        ) : "Chưa có"}
-                    </p>
-                </div>
+            <div className="flex items-center gap-4 bg-white/5 p-5 rounded-3xl border border-white/10 backdrop-blur-md">
+              <div className="w-12 h-12 rounded-xl bg-[#F4A616] flex items-center justify-center text-[#1E1E1E]">
+                <LuTarget size={24} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase text-white/40 leading-none mb-1">Vị trí của bạn</p>
+                <p className="font-black text-xl text-white leading-none">TOP 12%</p>
+              </div>
             </div>
           </div>
         </div>
-        
-        <div className="absolute -right-20 -bottom-20 opacity-5 rotate-12 pointer-events-none">
-            <LuTrophy size={500} />
-        </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6">
-        <Reveal>
-          <Card className="rounded-[48px] border-none shadow-[0_40px_100px_rgba(0,0,0,0.1)] overflow-hidden bg-bg-card">
-            <div className="p-8 md:p-12">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-                <Tabs 
-                    aria-label="Filter" 
-                    color="primary" 
-                    variant="bordered"
-                    selectedKey={filter}
-                    onSelectionChange={(key) => setFilter(key.toString())}
-                    classNames={{
-                        tabList: "bg-bg-subtle p-2 rounded-[22px] border-none",
-                        cursor: "rounded-[16px] bg-[#1E1E1E] shadow-xl",
-                        tab: "h-11 px-8 font-black text-xs uppercase tracking-widest",
-                        tabContent: "group-data-[selected=true]:text-white text-text-tertiary"
-                    }}
-                >
-                  <Tab key="today" title="Hôm nay" />
-                  <Tab key="week" title="Tuần" />
-                  <Tab key="all" title="Tất cả" />
-                </Tabs>
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="bg-white rounded-[40px] p-6 md:p-10 shadow-2xl shadow-black/5 border border-black/5">
+          {/* Tabs Tự Chế (Không lỗi) */}
+          <div className="flex gap-2 p-1.5 bg-[#F5F4ED] rounded-2xl mb-10 w-fit">
+            {["A1", "A2", "B1", "B2"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setSelectedType(tab)}
+                className={`px-6 py-2.5 rounded-xl text-sm font-black transition-all ${
+                  selectedTab === tab 
+                  ? "bg-[#1E1E1E] text-white shadow-lg" 
+                  : "text-[#1E1E1E]/40 hover:text-[#1E1E1E]"
+                }`}
+              >
+                Hạng {tab}
+              </button>
+            ))}
+          </div>
 
-                <div className="relative group flex-1 md:max-w-[280px]">
-                    <LuSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-text-tertiary group-focus-within:text-brand transition-colors" size={20} />
-                    <input 
-                        type="text" 
-                        placeholder="Tìm cao thủ..."
-                        className="w-full h-14 pl-14 pr-6 rounded-[22px] bg-bg-subtle border-3 border-transparent focus:border-brand transition-all font-black text-sm outline-none placeholder:font-bold placeholder:text-text-tertiary shadow-inner"
-                    />
-                </div>
-              </div>
-
-              <div className="overflow-x-auto">
-                <Table 
-                    aria-label="Leaderboard"
-                    removeWrapper
-                    classNames={{
-                        th: "bg-transparent text-text-tertiary font-black uppercase tracking-[0.15em] text-[10px] border-b-2 border-border/50 py-6",
-                        td: "py-6 border-b border-border/30 font-bold",
-                        tr: "transition-all duration-300"
-                    }}
-                >
-                    <TableHeader>
-                        <TableColumn width={100}>XẾP HẠNG</TableColumn>
-                        <TableColumn>VẬN ĐỘNG VIÊN</TableColumn>
-                        <TableColumn>ĐIỂM SỐ</TableColumn>
-                        <TableColumn>THỜI GIAN</TableColumn>
-                        <TableColumn align="end">DANH HIỆU</TableColumn>
-                    </TableHeader>
-                    <TableBody>
-                        {mockLeaderboard.map((item) => (
-                            <TableRow key={item.rank} className={isCurrentPlayer(item.name) ? "bg-brand/10 scale-[1.01] shadow-lg rounded-2xl" : "hover:bg-bg-subtle/50"}>
-                                <TableCell>
-                                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg ${
-                                        item.rank === 1 ? "bg-[#FFD700] text-[#1E1E1E] shadow-lg shadow-[#FFD700]/20" : 
-                                        item.rank === 2 ? "bg-[#E0E0E0] text-[#1E1E1E] shadow-lg shadow-[#E0E0E0]/20" : 
-                                        item.rank === 3 ? "bg-[#CD7F32] text-[#1E1E1E] shadow-lg shadow-[#CD7F32]/20" : "bg-bg-subtle text-text-tertiary"
-                                    }`}>
-                                        {item.rank}
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-[18px] bg-bg-subtle border-2 border-white flex items-center justify-center text-sm font-black shadow-sm">
-                                            {item.name.charAt(0)}
-                                        </div>
-                                        <div>
-                                            <p className={`text-base font-black ${isCurrentPlayer(item.name) ? "text-[#1E1E1E]" : "text-text-primary"}`}>
-                                                {item.name}
-                                                {isCurrentPlayer(item.name) && (
-                                                    <span className="ml-2 text-[9px] bg-[#1E1E1E] text-white px-2 py-1 rounded-lg tracking-tighter">YOU</span>
-                                                )}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-2 text-xl font-black tabular-nums text-[#1E1E1E]">
-                                        <LuStar size={16} className="fill-brand text-brand" />
-                                        {item.score.toLocaleString()}
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-2 text-text-secondary font-black tabular-nums">
-                                        <LuTimer size={16} />
-                                        {item.time}
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <Chip 
-                                        size="sm" 
-                                        variant="flat" 
-                                        color={item.rank <= 3 ? "warning" : "default"}
-                                        classNames={{ 
-                                            base: "h-7 rounded-lg px-3",
-                                            content: "font-black text-[9px] uppercase tracking-widest" 
-                                        }}
-                                    >
-                                        {item.rank <= 3 ? "LEGEND" : "CHALLENGER"}
-                                    </Chip>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-              </div>
-
-              <div className="mt-16 flex flex-col items-center">
-                 <div className="p-12 rounded-[40px] bg-bg-subtle border-3 border-dashed border-border/50 text-center max-w-xl w-full relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-brand/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="relative z-10">
-                        <p className="text-[#1E1E1E] font-black text-2xl mb-3">Sẵn sàng so tài?</p>
-                        <p className="text-base text-text-tertiary font-bold mb-8">Chỉ mất 60 giây để ghi danh vào huyền thoại.</p>
-                        <Link href="/road-signs">
-                            <Button className="h-16 px-12 rounded-[24px] bg-[#1E1E1E] text-white font-black text-xl shadow-2xl shadow-black/20 hover:scale-105 transition-all active:scale-95">
-                                CHƠI NGAY LEO TOP
-                            </Button>
-                        </Link>
-                    </div>
-                 </div>
-              </div>
+          {/* Bảng Demo Tự Chế (Không bao giờ lỗi Collection) */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-12 px-6 text-[10px] font-black uppercase tracking-[0.2em] text-[#1E1E1E]/30 mb-2">
+              <div className="col-span-2 text-center">Hạng</div>
+              <div className="col-span-6">Người chơi</div>
+              <div className="col-span-4 text-right">Điểm số</div>
             </div>
-          </Card>
-        </Reveal>
+
+            <div className="space-y-3">
+              {MOCK_DATA.map((item, idx) => (
+                <div 
+                  key={item.id} 
+                  className="grid grid-cols-12 items-center px-6 py-5 bg-[#F5F4ED]/50 rounded-[24px] border border-transparent hover:border-[#F4A616]/30 hover:bg-white hover:shadow-xl transition-all group"
+                >
+                  <div className="col-span-2 flex justify-center">
+                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm ${
+                      idx === 0 ? "bg-[#FFD700] text-[#1E1E1E]" : 
+                      idx === 1 ? "bg-[#E0E0E0] text-[#1E1E1E]" : 
+                      idx === 2 ? "bg-[#CD7F32] text-[#1E1E1E]" : 
+                      "bg-white text-[#1E1E1E]/40"
+                    }`}>
+                      {item.rank}
+                    </div>
+                  </div>
+                  <div className="col-span-6 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-white border-2 border-[#1E1E1E]/5 flex items-center justify-center font-black text-xs text-[#1E1E1E]/60 shadow-inner">
+                      {item.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-black text-[#1E1E1E]">{item.name}</p>
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-[#F4A616]">{item.title}</p>
+                    </div>
+                  </div>
+                  <div className="col-span-4 text-right flex items-center justify-end gap-2">
+                    <span className="text-2xl font-black text-[#1E1E1E] italic tabular-nums">{item.score}</span>
+                    <LuStar size={16} className="fill-[#F4A616] text-[#F4A616]" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-12 text-center">
+            <div className="p-8 rounded-[32px] bg-[#1E1E1E] text-white relative overflow-hidden group">
+               <div className="relative z-10">
+                 <p className="text-xl font-black mb-2 italic">BẠN CÓ THỂ LÀM TỐT HƠN?</p>
+                 <p className="text-white/50 text-sm font-bold mb-6 italic">Hãy chứng minh thực lực của mình ngay bây giờ.</p>
+                 <Link href="/exam">
+                    <button className="bg-[#F4A616] text-[#1E1E1E] px-10 py-4 rounded-2xl font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-xl shadow-[#F4A616]/20">
+                      THI THỬ NGAY →
+                    </button>
+                 </Link>
+               </div>
+               <LuTrophy className="absolute -right-6 -bottom-6 text-white/5 rotate-12" size={180} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-
