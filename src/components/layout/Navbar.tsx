@@ -4,18 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@heroui/react";
-import { useAuth } from "@/contexts/AuthContext";
 import Image from "next/image";
 import type { IconType } from "react-icons";
 import {
   LuHouse,
-  LuBookOpen,
   LuLayers,
   LuFileText,
   LuGamepad2,
-  LuTriangleAlert,
-  LuSettings,
-  LuArrowLeft,
 } from "react-icons/lu";
 
 // ─── Nav structure ────────────────────────────────────────────────────────────
@@ -37,40 +32,9 @@ type NavItem =
 
 const navItems: NavItem[] = [
   { kind: "link", href: "/landing", label: "Trang chủ", icon: LuHouse },
-  {
-    kind: "dropdown",
-    id: "hoc-tap",
-    label: "Học tập",
-    icon: LuBookOpen,
-    items: [
-      {
-        href: "/flashcards",
-        label: "Flash Card",
-        icon: LuLayers,
-        description: "Ôn tập với thẻ ghi nhớ",
-      },
-      {
-        href: "/exam",
-        label: "Luyện thi",
-        icon: LuFileText,
-        description: "Kiểm tra kiến thức",
-      },
-    ],
-  },
-  {
-    kind: "dropdown",
-    id: "tro-choi",
-    label: "Trò chơi",
-    icon: LuGamepad2,
-    items: [
-      {
-        href: "/road-signs",
-        label: "Biển báo đường",
-        icon: LuTriangleAlert,
-        description: "Nhận diện biển báo giao thông",
-      },
-    ],
-  },
+  { kind: "link", href: "/road-signs", label: "Chơi game", icon: LuGamepad2 },
+  { kind: "link", href: "/flashcards", label: "Ôn tập", icon: LuLayers },
+  { kind: "link", href: "/exam", label: "Thi thử", icon: LuFileText },
 ];
 
 // ─── Chevron ──────────────────────────────────────────────────────────────────
@@ -262,7 +226,6 @@ function MobileSheet({
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, role, signOut } = useAuth();
   const [mobileSheet, setMobileSheet] = useState<string | null>(null);
 
   useEffect(() => {
@@ -270,22 +233,22 @@ export default function Navbar() {
   }, [pathname]);
 
   return (
-    <>
-      <header className="hidden md:flex sticky top-0 z-40 py-4 min-h-[4.5rem] items-center bg-bg-page/90 backdrop-blur-md border-b border-border">
+    <div className="relative z-50">
+      <header className="hidden md:flex sticky top-0 py-4 min-h-[4.5rem] items-center bg-bg-page/90 backdrop-blur-md border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-8 w-full flex items-center justify-between gap-8">
           <div className="flex items-center gap-8">
             <Link
               href="/landing"
-              className="flex items-center gap-2.5 shrink-0"
+              className="flex items-center gap-2.5 shrink-0 hover:opacity-80 transition-opacity"
             >
               <Image
                 src="/logo.webp"
                 alt="Logo"
                 width={36}
                 height={36}
-                className="rounded-xl"
+                className="rounded-xl shadow-sm"
               />
-              <span className="font-serif font-medium text-lg text-text-primary">
+              <span className="font-serif font-bold text-xl text-text-primary tracking-tight">
                 hocluatdema
               </span>
             </Link>
@@ -303,125 +266,61 @@ export default function Navbar() {
                       key={item.href}
                       href={item.href}
                       className={[
-                        "flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200",
+                        "flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-black transition-all duration-200 active:scale-95",
                         active
-                          ? "bg-bg-subtle text-text-primary"
+                          ? "bg-brand text-[#1E1E1E] shadow-lg shadow-brand/20"
                           : "text-text-secondary hover:bg-bg-subtle hover:text-text-primary",
                       ].join(" ")}
                     >
-                      <Icon size={15} />
+                      <Icon size={16} />
                       {item.label}
                     </Link>
                   );
                 }
-                return (
-                  <DesktopDropdown
-                    key={item.id}
-                    item={item}
-                    pathname={pathname}
-                  />
-                );
+                return null;
               })}
             </nav>
           </div>
 
-          {/* Auth */}
-          {user ? (
-            <div className="flex items-center gap-3">
-              {role === "admin" && (
-                <Link
-                  href="/admin"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-border-strong bg-bg-subtle text-text-secondary hover:text-text-primary hover:bg-bg-card transition-colors"
-                >
-                  <LuSettings size={13} />
-                  Admin
-                </Link>
-              )}
-              <Link
-                href="/profile"
-                className="flex items-center gap-2 group px-2 py-1.5 rounded-xl hover:bg-bg-subtle transition-colors"
-                title="Quản lý hồ sơ"
-              >
-                <span className="w-6 h-6 rounded-full bg-brand flex items-center justify-center text-[10px] text-ivory font-serif font-medium">
-                  {(user.email || "U").charAt(0).toUpperCase()}
-                </span>
-                <span className="text-sm font-medium text-text-secondary group-hover:text-text-primary transition-colors max-w-[140px] truncate">
-                  {user.email}
-                </span>
-              </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/road-signs">
               <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl text-xs border-border text-text-secondary hover:bg-bg-subtle"
-                onPress={signOut}
+                className="bg-[#1E1E1E] text-white rounded-xl text-sm font-black px-6 shadow-xl shadow-black/10 hover:scale-105 active:scale-95 transition-all"
               >
-                Đăng xuất
-              </Button>
-            </div>
-          ) : (
-            <Link href="/auth/login">
-              <Button
-                size="sm"
-                className="bg-brand text-ivory rounded-xl text-sm font-medium px-5"
-              >
-                Đăng nhập
+                CHƠI NGAY
               </Button>
             </Link>
-          )}
+          </div>
         </div>
       </header>
 
-      <header className="md:hidden sticky top-0 z-40 h-14 flex items-center justify-between p-4 bg-bg-page/90 backdrop-blur-md border-b border-border">
+      <header className="md:hidden sticky top-0 h-16 flex items-center justify-between p-4 bg-bg-page/95 backdrop-blur-md border-b border-border shadow-sm">
         <Link
           href="/landing"
-          className="flex items-center gap-2 font-serif font-medium text-text-primary"
+          className="flex items-center gap-2 font-serif font-black text-text-primary text-lg"
         >
           <Image
             src="/logo.webp"
             alt="Logo"
-            width={36}
-            height={36}
-            className="rounded-xl"
+            width={32}
+            height={32}
+            className="rounded-lg shadow-sm"
           />
           hocluatdema
         </Link>
 
-        {user ? (
-          <div className="flex items-center gap-2">
-            {role === "admin" && (
-              <Link
-                href="/questions"
-                className="flex items-center gap-1 text-[11px] font-medium text-text-secondary px-2.5 py-1.5 rounded-lg border border-border-strong bg-bg-subtle"
-              >
-                <LuSettings size={12} />
-                Admin
-              </Link>
-            )}
-            <Link
-              href="/profile"
-              className="w-7 h-7 rounded-full bg-bg-subtle border border-border flex items-center justify-center text-[10px] text-text-secondary font-medium font-serif"
-            >
-              {(user.email || "U").charAt(0).toUpperCase()}
-            </Link>
-            <button
-              onClick={signOut}
-              className="text-[11px] text-text-secondary px-3 py-1.5 rounded-lg border border-border bg-bg-card shadow-sm"
-            >
-              Đăng xuất
-            </button>
-          </div>
-        ) : (
-          <Link
-            href="/auth/login"
-            className="text-xs font-medium text-ivory bg-brand px-3 py-1.5 rounded-lg"
+        <Link href="/road-signs">
+          <Button
+            size="sm"
+            className="bg-brand text-[#1E1E1E] rounded-xl text-xs font-black px-5 shadow-lg shadow-brand/20 active:scale-95 transition-all"
           >
-            Đăng nhập
-          </Link>
-        )}
+            CHƠI NGAY
+          </Button>
+        </Link>
       </header>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg-page/95 backdrop-blur-md border-t border-border safe-area-bottom">
-        <div className="flex items-stretch h-16">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-bg-page/95 backdrop-blur-xl border-t border-border shadow-[0_-10px_30px_rgba(0,0,0,0.05)] safe-area-bottom">
+        <div className="flex items-stretch h-18">
           {navItems.map((item) => {
             if (item.kind === "link") {
               const active =
@@ -433,68 +332,25 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   className={[
-                    "flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors relative",
+                    "flex flex-1 flex-col items-center justify-center gap-1 text-[10px] font-black transition-all relative active:scale-90",
                     active ? "text-brand" : "text-text-tertiary",
                   ].join(" ")}
                 >
                   <Icon
                     size={22}
-                    className={`transition-transform duration-200 ${active ? "scale-110" : ""}`}
+                    className={`transition-transform duration-300 ${active ? "scale-110" : ""}`}
                   />
-                  <span>{item.label}</span>
+                  <span className="uppercase tracking-tighter">{item.label}</span>
                   {active && (
-                    <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 bg-brand rounded-full" />
+                    <span className="absolute top-0 left-1/2 -translate-x-1/2 h-1 w-10 bg-brand rounded-full shadow-[0_2px_10px_rgba(244,166,22,0.4)]" />
                   )}
                 </Link>
               );
             }
-
-            const active = item.items.some(
-              (i) => pathname === i.href || pathname.startsWith(i.href),
-            );
-            const isOpen = mobileSheet === item.id;
-            const Icon = item.icon;
-
-            return (
-              <button
-                key={item.id}
-                onClick={() => setMobileSheet(isOpen ? null : item.id)}
-                className={[
-                  "flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors relative",
-                  active || isOpen ? "text-brand" : "text-text-tertiary",
-                ].join(" ")}
-              >
-                <Icon
-                  size={22}
-                  className={`transition-transform duration-200 ${active || isOpen ? "scale-110" : ""}`}
-                />
-                <span className="flex items-center gap-0.5">
-                  {item.label}
-                  <Chevron open={isOpen} />
-                </span>
-                {(active || isOpen) && (
-                  <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 bg-brand rounded-full" />
-                )}
-              </button>
-            );
+            return null;
           })}
         </div>
       </nav>
-
-      {navItems
-        .filter(
-          (i): i is Extract<NavItem, { kind: "dropdown" }> =>
-            i.kind === "dropdown",
-        )
-        .map((item) => (
-          <MobileSheet
-            key={item.id}
-            item={item}
-            open={mobileSheet === item.id}
-            onClose={() => setMobileSheet(null)}
-            pathname={pathname}
-          />
-        ))}
-    </>
+    </div>
   );
 }
