@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState, useMemo, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -22,11 +22,10 @@ export default function LandingPage() {
   const [selectedSign, setSelectedSign] = useState<number | null>(null)
   const [heroOpacity, setHeroOpacity] = useState(1)
   const [quizOpacity, setQuizOpacity] = useState(0)
-
-  const quizSignId = useMemo(
+  const [quizSignId, setQuizSignId] = useState(
     () => QUIZ_DATA[Math.floor(Math.random() * QUIZ_DATA.length)].signId,
-    [],
   )
+  const quizTransitionEnteredRef = useRef(false)
 
   // ─── GSAP ScrollTrigger (outside R3F — avoids React reconciler timing issues) ─
 
@@ -55,7 +54,12 @@ export default function LandingPage() {
         // Quiz panel opacity: fades in during transition to quiz
         if (p < 0.7) {
           setQuizOpacity(0)
+          quizTransitionEnteredRef.current = false
         } else if (p < 0.8) {
+          if (!quizTransitionEnteredRef.current) {
+            quizTransitionEnteredRef.current = true
+            setQuizSignId(QUIZ_DATA[Math.floor(Math.random() * QUIZ_DATA.length)].signId)
+          }
           setQuizOpacity((p - 0.7) / 0.1)
         } else {
           setQuizOpacity(1)
@@ -91,7 +95,6 @@ export default function LandingPage() {
             scrollProgressRef={scrollProgressRef}
             onSignSelect={setSelectedSign}
             quizSignId={quizSignId}
-            phase={phase}
           />
 
           <div className="pointer-events-none absolute inset-0">
