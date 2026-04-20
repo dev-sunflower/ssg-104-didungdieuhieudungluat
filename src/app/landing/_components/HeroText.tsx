@@ -85,8 +85,8 @@ export default function HeroText({ visible, opacity }: Props) {
         <div
           className="pointer-events-none absolute"
           style={{
-            left: mouse.x + 60,
-            top: mouse.y - 80,
+            left: mouse.x + 30,
+            top: mouse.y - 15,
             transform: "translate(-50%, -100%)",
           }}
         >
@@ -113,7 +113,7 @@ export default function HeroText({ visible, opacity }: Props) {
       )}
 
       {/* Minimal Frog Interaction Guide */}
-      <div 
+      <div
         className="absolute top-[68%] left-1/2 flex -translate-x-1/2 items-center gap-4 sm:gap-6 text-[9px] sm:text-[11px] font-medium uppercase tracking-[0.15em] text-[#1E1E1E]/50"
         style={{ fontFamily: "var(--font-inter), sans-serif" }}
       >
@@ -121,16 +121,16 @@ export default function HeroText({ visible, opacity }: Props) {
           <FiMousePointer className="text-[12px]" />
           <span>Nhấn</span>
         </div>
-        
+
         <div className="h-3 w-[1px] bg-[#1E1E1E]/20" />
-        
+
         <div className="flex items-center gap-2 transition-opacity hover:opacity-100 cursor-default">
           <FiRotateCcw className="text-[12px]" />
           <span>Xoay</span>
         </div>
-        
+
         <div className="h-3 w-[1px] bg-[#1E1E1E]/20" />
-        
+
         <div className="flex items-center gap-2 transition-opacity hover:opacity-100 cursor-default">
           <FiMaximize2 className="text-[12px]" />
           <span>Zoom</span>

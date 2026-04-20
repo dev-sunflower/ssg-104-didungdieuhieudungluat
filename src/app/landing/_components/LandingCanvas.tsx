@@ -73,43 +73,6 @@ const ARC_ROTATIONS_FULL: [number, number, number][] = ARC_POSITIONS_FULL.map(
   },
 );
 
-const HERO_POSITIONS_MOBILE: [number, number, number][] = Array.from(
-  { length: 4 },
-  (_, i) => {
-    const t = i / 3;
-    const angle = (t - 0.5) * Math.PI * 0.6;
-    const x = Math.sin(angle) * 3;
-    const y = Math.cos(angle) * 1.5;
-    const z = -Math.abs(Math.sin(angle)) * 2;
-    return [x, y, z] as [number, number, number];
-  },
-);
-
-const HERO_ROTATIONS_MOBILE: [number, number, number][] = Array.from(
-  { length: 4 },
-  (_, i) => {
-    const t = i / 3;
-    const angle = (t - 0.5) * Math.PI * 0.6;
-    return [0.02, Math.sin(angle) * 0.38, Math.sin(angle) * 0.32] as [number, number, number];
-  },
-);
-
-const ARC_POSITIONS_MOBILE: [number, number, number][] = Array.from(
-  { length: 4 },
-  (_, i) => {
-    const t = i / 3;
-    const angle = (t - 0.5) * Math.PI * 0.6;
-    return [Math.sin(angle) * 6, 0, Math.cos(angle) * -1 - 2] as [number, number, number];
-  },
-);
-
-const ARC_ROTATIONS_MOBILE: [number, number, number][] = ARC_POSITIONS_MOBILE.map(
-  ([x, , z]) => {
-    const angle = Math.atan2(x, 10 - z);
-    return [0, -angle, 0] as [number, number, number];
-  },
-);
-
 const QUIZ_SIGN_POSITION: [number, number, number] = [-2.75, 0, 2];
 const QUIZ_SIGN_ROTATION: [number, number, number] = [0, 0, 0];
 
@@ -141,19 +104,19 @@ function Scene({
 
   const signIds = isMobile ? SIGN_IDS_MOBILE : SIGN_IDS_FULL;
   const heroPositions = useMemo(
-    () => (isMobile ? HERO_POSITIONS_MOBILE : HERO_POSITIONS_FULL),
+    () => (isMobile ? HERO_POSITIONS_FULL.slice(0, 4) : HERO_POSITIONS_FULL),
     [isMobile],
   );
   const heroRotations = useMemo(
-    () => (isMobile ? HERO_ROTATIONS_MOBILE : HERO_ROTATIONS_FULL),
+    () => (isMobile ? HERO_ROTATIONS_FULL.slice(0, 4) : HERO_ROTATIONS_FULL),
     [isMobile],
   );
   const arcPositions = useMemo(
-    () => (isMobile ? ARC_POSITIONS_MOBILE : ARC_POSITIONS_FULL),
+    () => (isMobile ? ARC_POSITIONS_FULL.slice(0, 4) : ARC_POSITIONS_FULL),
     [isMobile],
   );
   const arcRotations = useMemo(
-    () => (isMobile ? ARC_ROTATIONS_MOBILE : ARC_ROTATIONS_FULL),
+    () => (isMobile ? ARC_ROTATIONS_FULL.slice(0, 4) : ARC_ROTATIONS_FULL),
     [isMobile],
   );
 
@@ -187,24 +150,14 @@ function Scene({
       mouseRef.current.x = e.clientX - window.innerWidth / 2;
       mouseRef.current.y = e.clientY - window.innerHeight / 2;
     };
-    const onTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        mouseRef.current.x = e.touches[0].clientX - window.innerWidth / 2;
-        mouseRef.current.y = e.touches[0].clientY - window.innerHeight / 2;
-      }
-    };
     const onLeave = () => {
       mouseRef.current = { x: 0, y: 0 };
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseleave", onLeave);
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
-    window.addEventListener("touchend", onLeave);
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onLeave);
     };
   }, []);
 
@@ -228,6 +181,26 @@ function Scene({
     const signCount = signIds.length;
     const LERP = 0.06;
 
+    // ── Dynamic Mobile Carousel ───────────────────────────────────────────────
+    let currentArcPositions = arcPositions;
+    let currentArcRotations = arcRotations;
+    if (isMobile) {
+      const time = clock.elapsedTime * 0.35; // Carousel speed
+      currentArcPositions = Array.from({ length: signCount }, (_, i) => {
+        const angle = (i / signCount) * Math.PI * 2 + time;
+        // z-center is -1.5, radius is 2.2
+        return [Math.sin(angle) * 2.2, 0.4, Math.cos(angle) * 2.2 - 1.5] as [
+          number,
+          number,
+          number,
+        ];
+      });
+      currentArcRotations = Array.from({ length: signCount }, (_, i) => {
+        const angle = (i / signCount) * Math.PI * 2 + time;
+        return [0, angle, 0] as [number, number, number];
+      });
+    }
+
     // ── Compute targets from scroll progress ──────────────────────────────────
 
     if (p < 0.2) {
@@ -241,22 +214,21 @@ function Scene({
 
       if (mdist > DEAD_ZONE) {
         // Unproject mouse to 3D world coords at z=0
-        const cam = camera as THREE.PerspectiveCamera;
-        const halfH = Math.tan((cam.fov * Math.PI) / 180 / 2) * cam.position.z;
-        const halfW = halfH * (window.innerWidth / window.innerHeight);
-        const mouseWorldX = (mx / (window.innerWidth / 2)) * halfW;
-        const mouseWorldY =
-          -(my / (window.innerHeight / 2)) * halfH + cam.position.y;
-        const blend = Math.min((mdist - DEAD_ZONE) / 300, 1);
-
-        t.signPositions = heroPositions.map(
-          (pos, i) =>
-            [
-              lerpN(pos[0], mouseWorldX + mouseRandomFactors[i].x, blend),
-              lerpN(pos[1], mouseWorldY + mouseRandomFactors[i].y, blend),
-              pos[2],
-            ] as [number, number, number],
-        );
+        // const cam = camera as THREE.PerspectiveCamera;
+        // const halfH = Math.tan((cam.fov * Math.PI) / 180 / 2) * cam.position.z;
+        // const halfW = halfH * (window.innerWidth / window.innerHeight);
+        // const mouseWorldX = (mx / (window.innerWidth / 2)) * halfW;
+        // const mouseWorldY =
+        //   -(my / (window.innerHeight / 2)) * halfH + cam.position.y;
+        // const blend = Math.min((mdist - DEAD_ZONE) / 300, 1);
+        // t.signPositions = heroPositions.map(
+        //   (pos, i) =>
+        //     [
+        //       lerpN(pos[0], mouseWorldX + mouseRandomFactors[i].x, blend),
+        //       lerpN(pos[1], mouseWorldY + mouseRandomFactors[i].y, blend),
+        //       pos[2],
+        //     ] as [number, number, number],
+        // );
       } else {
         t.signPositions = heroPositions.map(
           (pos) => [...pos] as [number, number, number],
@@ -279,37 +251,37 @@ function Scene({
       t.signPositions = heroPositions.map(
         (h, i) =>
           [
-            lerpN(h[0], arcPositions[i][0], eased),
-            lerpN(h[1], arcPositions[i][1], eased),
-            lerpN(h[2], arcPositions[i][2], eased),
+            lerpN(h[0], currentArcPositions[i][0], eased),
+            lerpN(h[1], currentArcPositions[i][1], eased),
+            lerpN(h[2], currentArcPositions[i][2], eased),
           ] as [number, number, number],
       );
       t.signRotations = heroRotations.map(
         (hr, i) =>
           [
-            lerpN(hr[0], arcRotations[i][0], eased),
-            lerpN(hr[1], arcRotations[i][1], eased),
-            lerpN(hr[2], arcRotations[i][2], eased),
+            lerpN(hr[0], currentArcRotations[i][0], eased),
+            lerpN(hr[1], currentArcRotations[i][1], eased),
+            lerpN(hr[2], currentArcRotations[i][2], eased),
           ] as [number, number, number],
       );
       t.signScales = Array(signCount).fill(1);
-      t.frogX = lerpN(0, FROG_POSITION_X_EXPLORE_SECTION, eased);
-      t.frogY = lerpN(0, -1, eased); // Move frog down
+      t.frogX = lerpN(0, isMobile ? 0 : FROG_POSITION_X_EXPLORE_SECTION, eased);
+      t.frogY = lerpN(0, isMobile ? -2.8 : -1, eased); // Move frog down
       t.frogScale = lerpN(0.5, 0.3, eased); // Shrink frog
       interactiveRef.current = false;
     } else if (p < 0.7) {
       // Explore
       t.cameraZ = 7;
       t.cameraY = 1;
-      t.signPositions = arcPositions.map(
+      t.signPositions = currentArcPositions.map(
         (pos) => [...pos] as [number, number, number],
       );
-      t.signRotations = arcRotations.map(
+      t.signRotations = currentArcRotations.map(
         (rot) => [...rot] as [number, number, number],
       );
       t.signScales = Array(signCount).fill(1);
-      t.frogX = FROG_POSITION_X_EXPLORE_SECTION;
-      t.frogY = -1; // Move frog lower
+      t.frogX = isMobile ? 0 : FROG_POSITION_X_EXPLORE_SECTION;
+      t.frogY = isMobile ? -2.8 : -1; // Move frog lower
       t.frogScale = 0.3; // Stay shrunk
 
       interactiveRef.current = true;
@@ -319,7 +291,7 @@ function Scene({
       const eased = easeInOut(raw);
       t.cameraZ = lerpN(11, 7, eased);
       t.cameraY = lerpN(0, 0.5, eased);
-      t.signPositions = arcPositions.map((pos, i) =>
+      t.signPositions = currentArcPositions.map((pos, i) =>
         i === quizIdx
           ? ([
               lerpN(pos[0], QUIZ_SIGN_POSITION[0], eased),
