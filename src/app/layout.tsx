@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Lora, Geist_Mono } from "next/font/google";
+import { Inter, Lora, Geist_Mono, Baloo_2 } from "next/font/google";
 import { Providers } from "./providers";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -23,6 +23,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const baloo2 = Baloo_2({
+  variable: "--font-caveat",
+  subsets: ["latin", "vietnamese"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Học Luật Dễ Mà",
   description:
@@ -35,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${inter.variable} ${lora.variable} ${geistMono.variable} h-full`}
+      className={`${inter.variable} ${lora.variable} ${geistMono.variable} ${baloo2.variable} h-full`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
