@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -23,11 +23,17 @@ export default function LandingPage() {
   const [phase, setPhase] = useState<Phase>("hero");
   const [selectedSign, setSelectedSign] = useState<number | null>(null);
   const [frogMenuOpen, setFrogMenuOpen] = useState(false);
+  const handleFrogClick = useCallback(() => setFrogMenuOpen(true), []);
   const [heroOpacity, setHeroOpacity] = useState(1);
   const [quizOpacity, setQuizOpacity] = useState(0);
   const [quizSignId, setQuizSignId] = useState(
     () => QUIZ_DATA[Math.floor(Math.random() * QUIZ_DATA.length)].signId,
   );
+
+  // ─── Performance Settings ──────────────────────────────────────────────────
+  const [lowPerfMode, setLowPerfMode] = useState(false);
+  const [lightsOff, setLightsOff] = useState(false);
+  const [animationsOff, setAnimationsOff] = useState(false);
   const quizTransitionEnteredRef = useRef(false);
 
   // ─── GSAP ScrollTrigger (outside R3F — avoids React reconciler timing issues) ─
@@ -85,12 +91,16 @@ export default function LandingPage() {
 
   return (
     <>
-      <LandingNav />
+      <LandingNav
+        lowPerfMode={lowPerfMode} setLowPerfMode={setLowPerfMode}
+        lightsOff={lightsOff} setLightsOff={setLightsOff}
+        animationsOff={animationsOff} setAnimationsOff={setAnimationsOff}
+      />
 
       {/* flex-none prevents body's flex-col from shrinking the 500vh container */}
       <div
         ref={containerRef}
-        className="relative flex-none bg-[#FFF8E7]"
+        className={`relative flex-none bg-[#FFF8E7]${animationsOff ? " [&_.animate-blob]:animation-none" : ""}`}
         style={{ height: "500vh" }}
       >
         <div className="sticky top-0 h-screen w-full overflow-hidden">
@@ -117,7 +127,10 @@ export default function LandingPage() {
             scrollProgressRef={scrollProgressRef}
             onSignSelect={setSelectedSign}
             quizSignId={quizSignId}
-            onFrogClick={() => setFrogMenuOpen(true)}
+            onFrogClick={handleFrogClick}
+            lightsOff={lightsOff}
+            animationsOff={animationsOff}
+            lowPerfMode={lowPerfMode}
           />
 
           <div className="pointer-events-none absolute inset-0">
