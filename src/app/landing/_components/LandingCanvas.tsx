@@ -91,6 +91,9 @@ type SceneProps = {
   isMobile: boolean;
   quizSignId: number;
   onFrogClick?: () => void;
+  lightsOff: boolean;
+  animationsOff: boolean;
+  lowPerfMode: boolean;
 };
 
 function Scene({
@@ -99,6 +102,9 @@ function Scene({
   isMobile,
   quizSignId,
   onFrogClick,
+  lightsOff,
+  animationsOff,
+  lowPerfMode,
 }: SceneProps) {
   const { camera, clock } = useThree();
 
@@ -185,7 +191,7 @@ function Scene({
     let currentArcPositions = arcPositions;
     let currentArcRotations = arcRotations;
     if (isMobile) {
-      const time = clock.elapsedTime * 0.35; // Carousel speed
+      const time = animationsOff ? 0 : clock.elapsedTime * 0.35; // Carousel speed
       currentArcPositions = Array.from({ length: signCount }, (_, i) => {
         const angle = (i / signCount) * Math.PI * 2 + time;
         // z-center is -1.5, radius is 2.2
@@ -389,7 +395,7 @@ function Scene({
       ref.scale.setScalar(THREE.MathUtils.lerp(ref.scale.x, hoverScale, LERP));
 
       // Gentle float in hero phase
-      if (p < 0.2) {
+      if (p < 0.2 && !animationsOff) {
         ref.position.y += Math.sin(clock.elapsedTime * 0.7 + i * 0.6) * 0.025;
         ref.rotation.z += Math.sin(clock.elapsedTime * 0.5 + i * 0.4) * 0.003;
       }
@@ -419,6 +425,7 @@ function Scene({
   const coolLightRef = useRef<THREE.PointLight>(null);
 
   useFrame(({ clock }) => {
+    if (animationsOff) return;
     const t = clock.elapsedTime;
     if (warmLightRef.current) {
       warmLightRef.current.position.x = Math.sin(t * 0.4) * 7;
@@ -432,46 +439,50 @@ function Scene({
 
   return (
     <>
-      {/* IBL — environment map for subtle reflections on materials */}
-      <Environment preset="sunset" />
+      {!lightsOff && (
+        <>
+          {/* IBL — environment map for subtle reflections on materials */}
+          <Environment preset="sunset" />
 
-      {/* Low ambient so shadows stay dramatic */}
-      <ambientLight intensity={0.18} />
+          {/* Key light — warm white from above, casts shadows */}
+          <directionalLight
+            position={[5, 10, 6]}
+            intensity={2.2}
+            color="#ffe8c0"
+            castShadow={!isMobile && !lowPerfMode}
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
+          />
 
-      {/* Key light — warm white from above, casts shadows */}
-      <directionalLight
-        position={[5, 10, 6]}
-        intensity={2.2}
-        color="#ffe8c0"
-        castShadow={!isMobile}
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-      />
+          {/* Rim light — cool blue from behind-left for depth separation */}
+          <directionalLight
+            position={[-6, 3, -8]}
+            intensity={0.9}
+            color="#6090ff"
+          />
 
-      {/* Rim light — cool blue from behind-left for depth separation */}
-      <directionalLight
-        position={[-6, 3, -8]}
-        intensity={0.9}
-        color="#6090ff"
-      />
+          {/* Animated warm point light — orbits the sign spread */}
+          <pointLight
+            ref={warmLightRef}
+            position={[7, 3, 2]}
+            intensity={40}
+            distance={18}
+            color="#ff9040"
+          />
 
-      {/* Animated warm point light — orbits the sign spread */}
-      <pointLight
-        ref={warmLightRef}
-        position={[7, 3, 2]}
-        intensity={40}
-        distance={18}
-        color="#ff9040"
-      />
+          {/* Animated cool point light — orbits opposite side */}
+          <pointLight
+            ref={coolLightRef}
+            position={[-7, 1, 2]}
+            intensity={30}
+            distance={18}
+            color="#4070ff"
+          />
+        </>
+      )}
 
-      {/* Animated cool point light — orbits opposite side */}
-      <pointLight
-        ref={coolLightRef}
-        position={[-7, 1, 2]}
-        intensity={30}
-        distance={18}
-        color="#4070ff"
-      />
+      {/* Low ambient so shadows stay dramatic, keep it even if lightsOff to see the model */}
+      <ambientLight intensity={lightsOff ? 1.5 : 0.18} />
 
       <Suspense fallback={null}>
         {signIds.map((id, i) => (
@@ -487,6 +498,8 @@ function Scene({
             onClick={() => handleSignClick(id)}
             onPointerOver={() => handlePointerOver(i)}
             onPointerOut={handlePointerOut}
+            lightsOff={lightsOff}
+            lowPerfMode={lowPerfMode}
           />
         ))}
         <FrogModel ref={frogRef} interactive onClick={onFrogClick} />
@@ -502,13 +515,20 @@ type Props = {
   onSignSelect: (id: number | null) => void;
   quizSignId: number;
   onFrogClick?: () => void;
+  lightsOff: boolean;
+  animationsOff: boolean;
+  lowPerfMode: boolean;
 };
 
 const CAMERA_CONFIG = {
   position: [0, 1.2, 9] as [number, number, number],
   fov: 58,
 };
-const GL_CONFIG = { antialias: true };
+const GL_CONFIG = {
+  antialias: true,
+  powerPreference: "high-performance",
+  stencil: false,
+};
 const CANVAS_STYLE = { width: "100%", height: "100%" };
 const IS_MOBILE = typeof window !== "undefined" && window.innerWidth < 768;
 
@@ -516,10 +536,10 @@ export default memo(function LandingCanvas(props: Props) {
   return (
     <Canvas
       camera={CAMERA_CONFIG}
-      shadows={!IS_MOBILE}
+      shadows={!IS_MOBILE && !props.lowPerfMode}
       style={CANVAS_STYLE}
       gl={GL_CONFIG}
-      dpr={[1, 1.5]}
+      dpr={props.lowPerfMode ? [1, 1] : [1, 1.5]}
     >
       <Scene {...props} isMobile={IS_MOBILE} />
     </Canvas>

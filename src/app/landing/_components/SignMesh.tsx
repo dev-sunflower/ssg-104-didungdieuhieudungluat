@@ -12,6 +12,8 @@ type Props = {
   onClick?: () => void;
   onPointerOver?: () => void;
   onPointerOut?: () => void;
+  lowPerfMode?: boolean;
+  lightsOff?: boolean;
 };
 
 // ─── Knobs bạn có thể tự chỉnh ────────────────────────────────────────────────
@@ -22,10 +24,10 @@ const GLOW_DISTANCE = 5; // bán kính ánh sáng lan ra (Three units)
 const GLOW_SPEED = 0.05; // tốc độ fade in/out (0.05 = chậm, 0.2 = nhanh)
 // ──────────────────────────────────────────────────────────────────────────────
 
-function SignFace({ id }: { id: number }) {
+function SignFace({ id, lowPerfMode }: { id: number; lowPerfMode?: boolean }) {
   const texture = useTexture(`/signs/${id}.png`);
   return (
-    <mesh castShadow>
+    <mesh castShadow={!lowPerfMode}>
       <planeGeometry args={[SIGN_SIZE, SIGN_SIZE]} />
       <meshStandardMaterial
         map={texture}
@@ -50,13 +52,15 @@ const SignMesh = forwardRef<THREE.Group, Props>(
       onClick,
       onPointerOver,
       onPointerOut,
+      lowPerfMode,
+      lightsOff,
     },
     ref,
   ) => {
     const lightRef = useRef<THREE.PointLight>(null);
 
     useFrame(() => {
-      if (!lightRef.current) return;
+      if (!lightRef.current || lightsOff) return;
       const isHovered = hoveredIdxRef.current === signIdx;
       lightRef.current.intensity = THREE.MathUtils.lerp(
         lightRef.current.intensity,
@@ -68,16 +72,18 @@ const SignMesh = forwardRef<THREE.Group, Props>(
     return (
       <group ref={ref}>
         {/* Point light sits slightly in front — illuminates THIS sign only, no geometry overlap */}
-        <pointLight
-          ref={lightRef}
-          position={[0, 0, 1.2]}
-          color="#F4A616"
-          intensity={0}
-          distance={GLOW_DISTANCE}
-          decay={2}
-        />
+        {!lightsOff && (
+          <pointLight
+            ref={lightRef}
+            position={[0, 0, 1.2]}
+            color="#F4A616"
+            intensity={0}
+            distance={GLOW_DISTANCE}
+            decay={2}
+          />
+        )}
 
-        <SignFace id={id} />
+        <SignFace id={id} lowPerfMode={lowPerfMode} />
 
         {/* Hit area vô hình để nhận click/hover */}
         {interactive && (

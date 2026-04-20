@@ -18,8 +18,7 @@ type Props = {
 };
 
 export default function HeroText({ visible, opacity }: Props) {
-  // Mouse position relative to viewport top-left
-  const [mouse, setMouse] = useState({ x: -999, y: -999 });
+  const bubbleRef = useRef<HTMLDivElement>(null);
   const [outside, setOutside] = useState(false);
   const [msgIdx, setMsgIdx] = useState(0);
   const [bubbleVisible, setBubbleVisible] = useState(false);
@@ -28,7 +27,11 @@ export default function HeroText({ visible, opacity }: Props) {
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
-      setMouse({ x: e.clientX, y: e.clientY });
+      if (bubbleRef.current) {
+        // Direct DOM update instead of React state for 60fps performance
+        bubbleRef.current.style.left = `${e.clientX + 30}px`;
+        bubbleRef.current.style.top = `${e.clientY - 15}px`;
+      }
       const dx = e.clientX - window.innerWidth / 2;
       const dy = e.clientY - window.innerHeight / 2;
       setOutside(Math.sqrt(dx * dx + dy * dy) > 200);
@@ -80,37 +83,34 @@ export default function HeroText({ visible, opacity }: Props) {
         Hoc Luat De Ma
       </h1>
 
-      {/* Speech bubble — appears above the sign cluster (offset from cursor) */}
-      {bubbleVisible && (
+      {/* Speech bubble wrapper — position updated via Ref for performance */}
+      <div
+        ref={bubbleRef}
+        className="pointer-events-none fixed z-50 transition-opacity duration-300"
+        style={{
+          transform: "translate(-50%, -100%)",
+          opacity: bubbleVisible ? 1 : 0,
+        }}
+      >
         <div
-          className="pointer-events-none absolute"
+          className="relative whitespace-nowrap rounded-2xl bg-white px-4 py-2 text-sm font-bold text-[#1E1E1E] shadow-lg"
           style={{
-            left: mouse.x + 30,
-            top: mouse.y - 15,
-            transform: "translate(-50%, -100%)",
+            fontFamily: "var(--font-caveat)",
+            fontSize: "1rem",
+            animation: bubbleVisible ? "frog-bubble-pop 0.25s cubic-bezier(0.34,1.56,0.64,1) both" : "none",
           }}
         >
-          <div
-            className="relative whitespace-nowrap rounded-2xl bg-white px-4 py-2 text-sm font-bold text-[#1E1E1E] shadow-lg"
+          {MESSAGES[msgIdx]}
+          {/* tail angled toward the sign below-left */}
+          <span
+            className="absolute top-full border-8 border-transparent border-t-white"
             style={{
-              fontFamily: "var(--font-caveat)",
-              fontSize: "1rem",
-              animation:
-                "frog-bubble-pop 0.25s cubic-bezier(0.34,1.56,0.64,1) both",
+              left: "30%",
+              filter: "drop-shadow(0 2px 1px rgba(0,0,0,0.08))",
             }}
-          >
-            {MESSAGES[msgIdx]}
-            {/* tail angled toward the sign below-left */}
-            <span
-              className="absolute top-full border-8 border-transparent border-t-white"
-              style={{
-                left: "30%",
-                filter: "drop-shadow(0 2px 1px rgba(0,0,0,0.08))",
-              }}
-            />
-          </div>
+          />
         </div>
-      )}
+      </div>
 
       {/* Minimal Frog Interaction Guide */}
       <div
