@@ -141,6 +141,7 @@ export default function LandingPage() {
             <QuizPanel
               visible={phase === "quiz" || quizOpacity > 0.01}
               opacity={quizOpacity}
+              quizSignId={quizSignId}
             />
           </div>
 
@@ -155,7 +156,7 @@ export default function LandingPage() {
             </div>
           )}
 
-          {/* Placeholder Frog Menu */}
+          {/* Frog Menu */}
           {frogMenuOpen && (
             <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
               <div className="relative w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl">
@@ -165,11 +166,47 @@ export default function LandingPage() {
                 >
                   ✕
                 </button>
-                <h3 className="mb-4 text-xl font-bold font-[var(--font-caveat)] text-[#F4A616]">Interactive Frog! 🐸</h3>
-                <p className="text-gray-600">Đây là menu giữ chỗ (placeholder) bật lên khi bấm vào con ếch. Bạn có thể thay đổi nội dung này sau.</p>
-                <button 
+                <h3 className="mb-1 text-xl font-bold font-[var(--font-caveat)] text-[#F4A616]">🐸 Bắt đầu học thôi!</h3>
+                <p className="mb-5 text-sm text-[#1E1E1E]/50">Chọn một chế độ để tiếp tục</p>
+
+                <div className="flex flex-col gap-3">
+                  <a
+                    href="/exam"
+                    className="flex items-center gap-4 rounded-2xl border border-[#1E1E1E]/10 bg-[#FFF9F0] px-4 py-3 transition hover:bg-[#FFE29A]"
+                  >
+                    <span className="text-2xl">📝</span>
+                    <div>
+                      <p className="font-semibold text-[#1E1E1E]">Thi thử</p>
+                      <p className="text-xs text-[#1E1E1E]/50">Mô phỏng đề thi sát hạch A1</p>
+                    </div>
+                  </a>
+
+                  <a
+                    href="/flashcards"
+                    className="flex items-center gap-4 rounded-2xl border border-[#1E1E1E]/10 bg-[#FFF9F0] px-4 py-3 transition hover:bg-[#FFE29A]"
+                  >
+                    <span className="text-2xl">🃏</span>
+                    <div>
+                      <p className="font-semibold text-[#1E1E1E]">Flashcard</p>
+                      <p className="text-xs text-[#1E1E1E]/50">Ôn biển báo nhanh bằng thẻ</p>
+                    </div>
+                  </a>
+
+                  <a
+                    href="/road-signs"
+                    className="flex items-center gap-4 rounded-2xl border border-[#1E1E1E]/10 bg-[#FFF9F0] px-4 py-3 transition hover:bg-[#FFE29A]"
+                  >
+                    <span className="text-2xl">🚦</span>
+                    <div>
+                      <p className="font-semibold text-[#1E1E1E]">Đèn giao thông</p>
+                      <p className="text-xs text-[#1E1E1E]/50">Mini-game trả lời câu hỏi</p>
+                    </div>
+                  </a>
+                </div>
+
+                <button
                   onClick={() => setFrogMenuOpen(false)}
-                  className="mt-6 w-full rounded-2xl bg-[#FFE29A] py-3 font-semibold text-[#1E1E1E] transition hover:bg-[#F4A616]"
+                  className="mt-5 w-full rounded-2xl border border-[#1E1E1E]/10 py-2.5 text-sm font-medium text-[#1E1E1E]/50 transition hover:bg-[#FFF4D6]"
                 >
                   Đóng
                 </button>

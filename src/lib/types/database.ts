@@ -51,7 +51,7 @@ export interface UserProgress {
 
 export interface ExamSession {
   id: string
-  user_id: string
+  user_id: string | null
   license_type_id: string
   score: number
   total_questions: number
@@ -60,4 +60,13 @@ export interface ExamSession {
   created_at: string
   // Joined
   license_types?: LicenseType
+}
+
+export interface GameSession {
+  id: string
+  player_name: string
+  score: number
+  questions_answered: number
+  hearts_remaining: number
+  created_at: string
 }

@@ -1,28 +1,226 @@
-﻿import Link from 'next/link'
+"use client";
+
+import { useState, useEffect, useCallback, useRef } from "react";
+import { createClient } from "@/lib/supabase/client";
+import type { Question, GameSession } from "@/lib/types/database";
+import type { GamePhase } from "./_lib/gameTypes";
+import { useFrameAnimation } from "./_hooks/useFrameAnimation";
+import NameEntryScreen from "./_components/NameEntryScreen";
+import GameScreen from "./_components/GameScreen";
+import QuestionModal from "./_components/QuestionModal";
+import ResultScreen from "./_components/ResultScreen";
+import Leaderboard from "./_components/Leaderboard";
+
+const HEARTS_START = 5;
+const NORMAL_WRONGS_PER_HEART = 5;
+const FRAME_COUNT = 8;
+const FPS = 12;
 
 export default function RoadSignsPage() {
-  return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-8 px-4 text-center">
-      <div className="max-w-2xl rounded-3xl border border-[#1E1E1E]/10 bg-[linear-gradient(140deg,#FFF4D6_0%,#FFE8A8_100%)] p-8 shadow-[0_14px_36px_rgba(30,30,30,0.08)]">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#1E1E1E]/60">Sắp ra mắt</p>
-        <h1 className="text-3xl font-extrabold text-[#1E1E1E] md:text-4xl">Nhận biết biển báo</h1>
-        <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-[#1E1E1E]/75">
-          Trò chơi đang được phát triển. Bạn có thể luyện trước qua{' '}
-          <Link href="/flashcards" className="font-semibold text-[#F4A616] hover:text-[#e59b11] transition-colors">
-            Flashcard
-          </Link>{' '}
-          để ghi nhớ chắc hơn.
-        </p>
-      </div>
+  const supabase = createClient();
 
-      <div className="flex gap-3">
-        <Link href="/flashcards" className="rounded-2xl bg-[#F4A616] px-6 py-2.5 text-sm font-semibold text-[#1E1E1E] transition-colors hover:bg-[#e59b11]">
-          Học Flashcard
-        </Link>
-        <Link href="/landing" className="rounded-2xl border border-[#1E1E1E]/15 px-6 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-[#FFF4D6]">
-          ← Trang chủ
-        </Link>
+  // ── Game state ──────────────────────────────────────────────────────
+  const [phase, setPhase] = useState<GamePhase>("name-entry");
+  const [playerName, setPlayerName] = useState("");
+  const [score, setScore] = useState(0);
+  const [hearts, setHearts] = useState(HEARTS_START);
+  const [wrongNormalCount, setWrongNormalCount] = useState(0);
+  const [questionsAnswered, setQuestionsAnswered] = useState(0);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [qIndex, setQIndex] = useState(0);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [leaderboard, setLeaderboard] = useState<GameSession[]>([]);
+
+  // Refs to read latest values inside callbacks without stale closures
+  const heartsRef = useRef(hearts);
+  const wrongNormalRef = useRef(wrongNormalCount);
+  const scoreRef = useRef(score);
+  const questionsAnsweredRef = useRef(questionsAnswered);
+  const playerNameRef = useRef(playerName);
+  heartsRef.current = hearts;
+  wrongNormalRef.current = wrongNormalCount;
+  scoreRef.current = score;
+  questionsAnsweredRef.current = questionsAnswered;
+  playerNameRef.current = playerName;
+
+  // ── Animation ───────────────────────────────────────────────────────
+  const handleAnimationComplete = useCallback(() => {
+    setPhase((prev) => {
+      if (prev === "animating-red") return "question-open";
+      if (prev === "animating-green") return "animating-drive";
+      if (prev === "animating-drive") return "animating-red";
+      return prev;
+    });
+  }, []);
+
+  const { frame, play, pause, reset } = useFrameAnimation(
+    FRAME_COUNT,
+    FPS,
+    handleAnimationComplete,
+  );
+
+  // Drive play/pause/reset from phase changes
+  useEffect(() => {
+    if (
+      phase === "animating-red" ||
+      phase === "animating-green" ||
+      phase === "animating-drive"
+    ) {
+      reset();
+      const t = setTimeout(() => play(), 50);
+      return () => clearTimeout(t);
+    }
+    if (phase === "question-open") {
+      pause();
+    }
+  }, [phase, play, pause, reset]);
+
+  // Advance question index each time a new red cycle begins
+  const prevPhaseRef = useRef<GamePhase>("name-entry");
+  useEffect(() => {
+    if (
+      phase === "animating-red" &&
+      prevPhaseRef.current === "animating-drive" &&
+      questions.length > 0
+    ) {
+      setQIndex((i) => (i + 1) % questions.length);
+    }
+    prevPhaseRef.current = phase;
+  }, [phase, questions.length]);
+
+  // ── Data fetching ───────────────────────────────────────────────────
+  const loadQuestions = useCallback(async () => {
+    setLoadingQuestions(true);
+    const { data } = await supabase.from("questions").select("*");
+    if (data && data.length > 0) {
+      setQuestions([...data].sort(() => Math.random() - 0.5));
+    }
+    setLoadingQuestions(false);
+  }, [supabase]);
+
+  const fetchLeaderboard = useCallback(async () => {
+    const { data } = await supabase
+      .from("game_sessions")
+      .select("*")
+      .order("score", { ascending: false })
+      .limit(10);
+    if (data) setLeaderboard(data);
+  }, [supabase]);
+
+  // Fetch leaderboard on mount
+  useEffect(() => {
+    fetchLeaderboard();
+  }, [fetchLeaderboard]);
+
+  // ── Game actions ────────────────────────────────────────────────────
+  const handleStart = useCallback(
+    async (name: string) => {
+      setPlayerName(name);
+      await loadQuestions();
+      setScore(0);
+      setHearts(HEARTS_START);
+      setWrongNormalCount(0);
+      setQuestionsAnswered(0);
+      setQIndex(0);
+      setSessionId(null);
+      setPhase("animating-red");
+    },
+    [loadQuestions],
+  );
+
+  const handleAnswer = useCallback(
+    async (isCorrect: boolean) => {
+      const currentQ = questions[qIndex];
+      const isCritical = currentQ?.is_critical ?? false;
+      const newAnswered = questionsAnsweredRef.current + 1;
+      setQuestionsAnswered(newAnswered);
+
+      if (isCorrect) {
+        setScore((s) => s + (isCritical ? 20 : 5));
+        setPhase("animating-green");
+        return;
+      }
+
+      // Wrong answer — calculate heart loss
+      let newHearts = heartsRef.current;
+      if (isCritical) {
+        newHearts -= 1;
+      } else {
+        const newWrong = wrongNormalRef.current + 1;
+        setWrongNormalCount(newWrong);
+        if (newWrong % NORMAL_WRONGS_PER_HEART === 0) {
+          newHearts -= 1;
+        }
+      }
+      setHearts(newHearts);
+
+      if (newHearts <= 0) {
+        const { data } = await supabase
+          .from("game_sessions")
+          .insert({
+            player_name: playerNameRef.current,
+            score: scoreRef.current,
+            questions_answered: newAnswered,
+            hearts_remaining: 0,
+          })
+          .select("id")
+          .single();
+        if (data) setSessionId(data.id);
+        await fetchLeaderboard();
+        setPhase("game-over");
+      } else {
+        // Remove wrong question from pool, pick a random different one
+        setQuestions((prev) => {
+          const filtered = prev.filter((_, idx) => idx !== qIndex);
+          if (filtered.length === 0) return prev; // safety: keep at least 1
+          const nextIdx = Math.floor(Math.random() * filtered.length);
+          setQIndex(nextIdx);
+          return filtered;
+        });
+        setPhase("animating-red");
+      }
+    },
+    [questions, qIndex, supabase, fetchLeaderboard],
+  );
+
+  const handleRestart = useCallback(() => {
+    setPhase("name-entry");
+  }, []);
+
+  // ── Render ──────────────────────────────────────────────────────────
+  function renderLeft() {
+    if (phase === "name-entry") {
+      return <NameEntryScreen onStart={handleStart} loading={loadingQuestions} />;
+    }
+    if (phase === "game-over") {
+      return (
+        <ResultScreen
+          score={score}
+          questionsAnswered={questionsAnswered}
+          heartsRemaining={hearts}
+          sessionId={sessionId}
+          leaderboard={leaderboard}
+          onRestart={handleRestart}
+        />
+      );
+    }
+    return (
+      <div className="relative">
+        <GameScreen phase={phase} frame={frame} score={score} hearts={hearts} />
+        {phase === "question-open" && questions[qIndex] && (
+          <QuestionModal question={questions[qIndex]} onAnswer={handleAnswer} />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto grid grid-cols-1 gap-6 lg:grid-cols-[1fr_300px]">
+      <div>{renderLeft()}</div>
+      <div className="lg:sticky lg:top-6 lg:self-start">
+        <Leaderboard entries={leaderboard} highlightId={sessionId ?? undefined} />
       </div>
     </div>
-  )
+  );
 }
