@@ -26,6 +26,15 @@ export default function QuestionModal({ question, onAnswer }: Props) {
           </span>
         )}
 
+        {question.image_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={question.image_url}
+            alt="Hình minh họa câu hỏi"
+            className="mb-3 w-full rounded-2xl object-contain max-h-48 bg-[#F5F0E8]"
+          />
+        )}
+
         <p className="text-base font-bold leading-snug text-[#1E1E1E]">{question.content}</p>
 
         <div className="mt-4 flex flex-col gap-2">

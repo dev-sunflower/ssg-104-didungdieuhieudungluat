@@ -56,7 +56,7 @@ export default function NameEntryScreen({ onStart, loading }: Props) {
         </button>
       </div>
 
-      {/* Info pills as gradient cards */}
+      {/* Scoring pills */}
       <div className="relative flex gap-3">
         {[
           { icon: "❤️", value: "5", label: "mạng" },
@@ -68,12 +68,37 @@ export default function NameEntryScreen({ onStart, loading }: Props) {
             className="flex flex-col items-center gap-0.5 rounded-2xl border border-[#F4A616]/30 bg-[linear-gradient(135deg,#FFF4D6,#FFE8A8)] px-4 py-3 text-center shadow-sm"
           >
             <span className="text-2xl">{pill.icon}</span>
-            <span className="text-sm font-bold text-[#1E1E1E]">
-              {pill.value}
-            </span>
+            <span className="text-sm font-bold text-[#1E1E1E]">{pill.value}</span>
             <span className="text-[10px] text-[#1E1E1E]/50">{pill.label}</span>
           </div>
         ))}
+      </div>
+
+      {/* Game rules */}
+      <div className="relative w-full max-w-xs rounded-3xl border border-[#1E1E1E]/10 bg-white p-5 shadow-sm text-sm text-[#1E1E1E]">
+        <p className="mb-3 font-bold">📋 Luật chơi</p>
+        <ul className="flex flex-col gap-2 text-xs leading-relaxed text-[#1E1E1E]/70">
+          <li className="flex gap-2">
+            <span>🟢</span>
+            <span>Trả lời <strong className="text-[#1E1E1E]">đúng</strong> → đèn xanh, xe qua, +5 điểm</span>
+          </li>
+          <li className="flex gap-2">
+            <span>🔴</span>
+            <span>Trả lời <strong className="text-[#1E1E1E]">sai</strong> → câu đó bị loại, random câu mới</span>
+          </li>
+          <li className="flex gap-2">
+            <span>💔</span>
+            <span>Sai <strong className="text-[#1E1E1E]">5 câu thường</strong> liên tiếp mất 1 mạng</span>
+          </li>
+          <li className="flex gap-2">
+            <span>⚡</span>
+            <span><strong className="text-[#1E1E1E]">Câu điểm liệt</strong> — sai là mất 1 mạng ngay, đúng +20 điểm</span>
+          </li>
+          <li className="flex gap-2">
+            <span>💀</span>
+            <span>Hết <strong className="text-[#1E1E1E]">5 mạng</strong> → kết thúc, ghi bảng xếp hạng</span>
+          </li>
+        </ul>
       </div>
     </div>
   );

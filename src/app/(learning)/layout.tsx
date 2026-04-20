@@ -2,7 +2,7 @@ import Navbar from '@/components/layout/Navbar'
 
 export default function LearningLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-[linear-gradient(180deg,#FFF4D6_0%,#FFF9EA_36%,#FFFFFF_100%)]">
+    <div className="relative min-h-screen flex flex-col bg-[linear-gradient(180deg,#FFF4D6_0%,#FFF9EA_36%,#FFFFFF_100%)]">
       {/* Blob decorations */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div

@@ -35,8 +35,13 @@ function ExamContent() {
   const [started, setStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(EXAM_SECONDS);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const userIdRef = useRef<string | null>(null);
+  const submitRef = useRef<() => void>(() => {});
 
   useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      userIdRef.current = data.session?.user.id ?? null;
+    });
     supabase
       .from("license_types")
       .select("*")
@@ -47,7 +52,7 @@ function ExamContent() {
       });
   }, [supabase]);
 
-  // Countdown timer
+  // Countdown timer — calls submitRef so it always uses the latest handleSubmit
   useEffect(() => {
     if (!started || submitted) {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -57,7 +62,7 @@ function ExamContent() {
       setTimeLeft((t) => {
         if (t <= 1) {
           clearInterval(timerRef.current!);
-          setSubmitted(true);
+          submitRef.current();
           return 0;
         }
         return t - 1;
@@ -91,10 +96,27 @@ function ExamContent() {
     setAnswers((prev) => ({ ...prev, [questions[currentIndex].id]: key }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(async () => {
     if (timerRef.current) clearInterval(timerRef.current);
     setSubmitted(true);
-  };
+    if (!a1Type || !questions.length) return;
+    const correct = questions.filter((q) => answers[q.id] === q.correct_answer).length;
+    const hasCriticalFail = questions.some(
+      (q) => q.is_critical && answers[q.id] && answers[q.id] !== q.correct_answer,
+    );
+    const passed = !hasCriticalFail && correct >= a1Type.pass_score;
+    await supabase.from("exam_sessions").insert({
+      user_id: userIdRef.current,
+      license_type_id: a1Type.id,
+      score: correct,
+      total_questions: questions.length,
+      passed,
+      answers,
+    });
+  }, [a1Type, questions, answers, supabase]);
+
+  // Keep submitRef pointing to the latest handleSubmit so the timer can call it
+  useEffect(() => { submitRef.current = handleSubmit; }, [handleSubmit]);
 
   // ── Results screen ─────────────────────────────────────────────────
   if (submitted) {

@@ -170,6 +170,14 @@ export default function RoadSignsPage() {
         await fetchLeaderboard();
         setPhase("game-over");
       } else {
+        // Remove wrong question from pool, pick a random different one
+        setQuestions((prev) => {
+          const filtered = prev.filter((_, idx) => idx !== qIndex);
+          if (filtered.length === 0) return prev; // safety: keep at least 1
+          const nextIdx = Math.floor(Math.random() * filtered.length);
+          setQIndex(nextIdx);
+          return filtered;
+        });
         setPhase("animating-red");
       }
     },

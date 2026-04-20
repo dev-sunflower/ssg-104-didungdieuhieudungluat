@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { createClient } from '@/lib/supabase/client'
 
 type Props = {
   lowPerfMode: boolean;
@@ -17,6 +18,14 @@ export default function LandingNav({
   animationsOff, setAnimationsOff
 }: Props) {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data }) => setLoggedIn(!!data.session))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setLoggedIn(!!session))
+    return () => subscription.unsubscribe()
+  }, [])
 
   return (
     <nav className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-4">
@@ -74,12 +83,21 @@ export default function LandingNav({
           )}
         </div>
 
-        <Link
-          href="/auth/login"
-          className="rounded-xl bg-white/80 px-5 py-2 text-sm font-semibold text-[#1E1E1E] shadow-sm backdrop-blur-sm transition hover:bg-white"
-        >
-          Đăng nhập
-        </Link>
+        {loggedIn ? (
+          <Link
+            href="/exam"
+            className="rounded-xl bg-[#F4A616] px-5 py-2 text-sm font-semibold text-[#1E1E1E] shadow-sm transition hover:bg-[#e09510]"
+          >
+            Vào học →
+          </Link>
+        ) : (
+          <Link
+            href="/auth/login"
+            className="rounded-xl bg-white/80 px-5 py-2 text-sm font-semibold text-[#1E1E1E] shadow-sm backdrop-blur-sm transition hover:bg-white"
+          >
+            Đăng nhập
+          </Link>
+        )}
       </div>
     </nav>
   )
