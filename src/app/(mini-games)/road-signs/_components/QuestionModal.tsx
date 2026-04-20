@@ -18,7 +18,7 @@ export default function QuestionModal({ question, onAnswer }: Props) {
   }
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 px-4 backdrop-blur-sm">
+    <div className="absolute inset-0 z-10 flex items-center justify-center px-4">
       <div className="w-full max-w-md rounded-3xl border-2 border-[#F4A616]/30 bg-white p-5 shadow-2xl">
         {question.is_critical && (
           <span className="mb-2 inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-600">

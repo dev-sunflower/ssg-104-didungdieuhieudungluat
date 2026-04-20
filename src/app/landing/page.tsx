@@ -141,6 +141,7 @@ export default function LandingPage() {
             <QuizPanel
               visible={phase === "quiz" || quizOpacity > 0.01}
               opacity={quizOpacity}
+              quizSignId={quizSignId}
             />
           </div>
 
