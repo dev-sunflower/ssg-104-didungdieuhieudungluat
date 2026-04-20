@@ -41,7 +41,7 @@ export default function QuestionModal({ question, onAnswer }: Props) {
                 key={opt.key}
                 disabled={answered}
                 onClick={() => handleSelect(opt.key)}
-                className={`w-full rounded-2xl border-2 px-4 py-3 text-left text-sm font-medium transition-all ${cls}`}
+                className={`w-full rounded-2xl border-2 px-3 py-2 text-left text-sm font-medium transition-all ${cls}`}
               >
                 <span className="font-bold">{opt.key}.</span> {opt.text}
               </button>

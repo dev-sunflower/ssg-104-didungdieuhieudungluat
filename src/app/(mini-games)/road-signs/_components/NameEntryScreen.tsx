@@ -10,14 +10,18 @@ export default function NameEntryScreen({ onStart, loading }: Props) {
   const [name, setName] = useState('')
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6 py-12">
-      <div className="text-center">
-        <span className="text-5xl">🚦</span>
-        <h1 className="mt-3 text-3xl font-extrabold text-[#1E1E1E]">Đèn Giao Thông</h1>
+    <div className="relative flex flex-col items-center justify-center gap-6 py-10 overflow-hidden">
+      {/* Blob decorations */}
+      <div className="pointer-events-none absolute -top-8 -left-8 h-40 w-40 rounded-full bg-[#FFE29A]/60 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-8 -right-8 h-32 w-32 rounded-full bg-[#4ECDC4]/20 blur-2xl" />
+
+      <div className="relative text-center">
+        <span className="text-6xl">🚦</span>
+        <h1 className="mt-3 text-3xl font-bold text-[#1E1E1E]" style={{ fontFamily: 'var(--font-caveat)' }}>Đèn Giao Thông</h1>
         <p className="mt-2 text-sm text-[#1E1E1E]/60">Trả lời đúng để xe qua đèn xanh!</p>
       </div>
 
-      <div className="w-full max-w-xs rounded-3xl border border-[#1E1E1E]/10 bg-white p-6 shadow-[0_12px_30px_rgba(30,30,30,0.08)]">
+      <div className="relative w-full max-w-xs rounded-3xl border border-[#1E1E1E]/10 bg-white p-6 shadow-[0_12px_30px_rgba(30,30,30,0.08)]">
         <label className="mb-2 block text-sm font-semibold text-[#1E1E1E]">Tên của bạn</label>
         <input
           type="text"
@@ -41,10 +45,22 @@ export default function NameEntryScreen({ onStart, loading }: Props) {
         </button>
       </div>
 
-      <div className="flex gap-6 text-center text-sm text-[#1E1E1E]/50">
-        <div><span className="block text-xl">❤️</span>5 mạng</div>
-        <div><span className="block text-xl">⭐</span>5 điểm/câu</div>
-        <div><span className="block text-xl">⚡</span>20 điểm (điểm liệt)</div>
+      {/* Info pills as gradient cards */}
+      <div className="relative flex gap-3">
+        {[
+          { icon: '❤️', value: '5', label: 'mạng' },
+          { icon: '⭐', value: '5đ', label: '/câu thường' },
+          { icon: '⚡', value: '20đ', label: '/điểm liệt' },
+        ].map((pill) => (
+          <div
+            key={pill.label}
+            className="flex flex-col items-center gap-0.5 rounded-2xl border border-[#F4A616]/30 bg-[linear-gradient(135deg,#FFF4D6,#FFE8A8)] px-4 py-3 text-center shadow-sm"
+          >
+            <span className="text-2xl">{pill.icon}</span>
+            <span className="text-sm font-bold text-[#1E1E1E]">{pill.value}</span>
+            <span className="text-[10px] text-[#1E1E1E]/50">{pill.label}</span>
+          </div>
+        ))}
       </div>
     </div>
   )
