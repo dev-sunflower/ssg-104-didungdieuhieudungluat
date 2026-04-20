@@ -528,7 +528,7 @@ const GL_CONFIG = {
   antialias: true,
   powerPreference: "high-performance",
   stencil: false,
-};
+} as const;
 const CANVAS_STYLE = { width: "100%", height: "100%" };
 const IS_MOBILE = typeof window !== "undefined" && window.innerWidth < 768;
 
