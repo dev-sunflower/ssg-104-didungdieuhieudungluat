@@ -26,22 +26,22 @@ export const SIGN_DATA: SignInfo[] = [
     rule: "Phải giảm tốc và nhường đường cho xe ưu tiên.",
   },
   {
-    id: 10,
+    id: 5,
     name: "Biển báo giao thông",
     rule: "Chú ý tuân thủ hiệu lệnh giao thông tại khu vực này.",
   },
   {
-    id: 11,
+    id: 6,
     name: "Biển báo giao thông",
     rule: "Chú ý tuân thủ hiệu lệnh giao thông tại khu vực này.",
   },
   {
-    id: 12,
+    id: 7,
     name: "Biển báo giao thông",
     rule: "Chú ý tuân thủ hiệu lệnh giao thông tại khu vực này.",
   },
   {
-    id: 13,
+    id: 8,
     name: "Biển báo giao thông",
     rule: "Chú ý tuân thủ hiệu lệnh giao thông tại khu vực này.",
   },

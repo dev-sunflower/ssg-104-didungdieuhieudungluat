@@ -12,7 +12,7 @@ export type Phase = "hero" | "explore" | "quiz";
 
 // ─── Sign IDs ─────────────────────────────────────────────────────────────────
 
-const SIGN_IDS_FULL = [1, 2, 3, 4, 10, 11, 12, 13];
+const SIGN_IDS_FULL = [1, 2, 3, 4, 5, 6, 7, 8];
 const SIGN_IDS_MOBILE = [1, 2, 3, 4];
 
 // ─── Tarot fan spread — hero phase ────────────────────────────────────────────
@@ -23,7 +23,7 @@ const X_SPREAD = 6; // x của biển ngoài cùng (cũ: 3.8)
 const Y_ARC = 2; // độ cao đỉnh vòng cung (cũ: 2.3)
 const Z_DEPTH = 2.8; // độ sâu biển ngoài cùng (cũ: 2.0)
 
-const FROG_POSITION_X_EXPLORE_SECTION = -7;
+const FROG_POSITION_X_EXPLORE_SECTION = -6;
 
 // 8 signs evenly distributed across the fan arc
 const HERO_POSITIONS_FULL: [number, number, number][] = Array.from(
@@ -73,6 +73,43 @@ const ARC_ROTATIONS_FULL: [number, number, number][] = ARC_POSITIONS_FULL.map(
   },
 );
 
+const HERO_POSITIONS_MOBILE: [number, number, number][] = Array.from(
+  { length: 4 },
+  (_, i) => {
+    const t = i / 3;
+    const angle = (t - 0.5) * Math.PI * 0.6;
+    const x = Math.sin(angle) * 3;
+    const y = Math.cos(angle) * 1.5;
+    const z = -Math.abs(Math.sin(angle)) * 2;
+    return [x, y, z] as [number, number, number];
+  },
+);
+
+const HERO_ROTATIONS_MOBILE: [number, number, number][] = Array.from(
+  { length: 4 },
+  (_, i) => {
+    const t = i / 3;
+    const angle = (t - 0.5) * Math.PI * 0.6;
+    return [0.02, Math.sin(angle) * 0.38, Math.sin(angle) * 0.32] as [number, number, number];
+  },
+);
+
+const ARC_POSITIONS_MOBILE: [number, number, number][] = Array.from(
+  { length: 4 },
+  (_, i) => {
+    const t = i / 3;
+    const angle = (t - 0.5) * Math.PI * 0.6;
+    return [Math.sin(angle) * 6, 0, Math.cos(angle) * -1 - 2] as [number, number, number];
+  },
+);
+
+const ARC_ROTATIONS_MOBILE: [number, number, number][] = ARC_POSITIONS_MOBILE.map(
+  ([x, , z]) => {
+    const angle = Math.atan2(x, 10 - z);
+    return [0, -angle, 0] as [number, number, number];
+  },
+);
+
 const QUIZ_SIGN_POSITION: [number, number, number] = [-2.75, 0, 2];
 const QUIZ_SIGN_ROTATION: [number, number, number] = [0, 0, 0];
 
@@ -90,6 +127,7 @@ type SceneProps = {
   onSignSelect: (id: number | null) => void;
   isMobile: boolean;
   quizSignId: number;
+  onFrogClick?: () => void;
 };
 
 function Scene({
@@ -97,24 +135,25 @@ function Scene({
   onSignSelect,
   isMobile,
   quizSignId,
+  onFrogClick,
 }: SceneProps) {
   const { camera, clock } = useThree();
 
   const signIds = isMobile ? SIGN_IDS_MOBILE : SIGN_IDS_FULL;
   const heroPositions = useMemo(
-    () => (isMobile ? HERO_POSITIONS_FULL.slice(0, 4) : HERO_POSITIONS_FULL),
+    () => (isMobile ? HERO_POSITIONS_MOBILE : HERO_POSITIONS_FULL),
     [isMobile],
   );
   const heroRotations = useMemo(
-    () => (isMobile ? HERO_ROTATIONS_FULL.slice(0, 4) : HERO_ROTATIONS_FULL),
+    () => (isMobile ? HERO_ROTATIONS_MOBILE : HERO_ROTATIONS_FULL),
     [isMobile],
   );
   const arcPositions = useMemo(
-    () => (isMobile ? ARC_POSITIONS_FULL.slice(0, 4) : ARC_POSITIONS_FULL),
+    () => (isMobile ? ARC_POSITIONS_MOBILE : ARC_POSITIONS_FULL),
     [isMobile],
   );
   const arcRotations = useMemo(
-    () => (isMobile ? ARC_ROTATIONS_FULL.slice(0, 4) : ARC_ROTATIONS_FULL),
+    () => (isMobile ? ARC_ROTATIONS_MOBILE : ARC_ROTATIONS_FULL),
     [isMobile],
   );
 
@@ -148,14 +187,24 @@ function Scene({
       mouseRef.current.x = e.clientX - window.innerWidth / 2;
       mouseRef.current.y = e.clientY - window.innerHeight / 2;
     };
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        mouseRef.current.x = e.touches[0].clientX - window.innerWidth / 2;
+        mouseRef.current.y = e.touches[0].clientY - window.innerHeight / 2;
+      }
+    };
     const onLeave = () => {
       mouseRef.current = { x: 0, y: 0 };
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseleave", onLeave);
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onLeave);
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onLeave);
     };
   }, []);
 
@@ -167,6 +216,7 @@ function Scene({
     signRotations: heroRotations.map((r) => [...r] as [number, number, number]),
     signScales: Array(signIds.length).fill(1) as number[],
     frogX: 0,
+    frogY: 0,
     frogScale: 0.5,
   });
 
@@ -217,6 +267,7 @@ function Scene({
       );
       t.signScales = Array(signCount).fill(1);
       t.frogX = 0;
+      t.frogY = 0;
       t.frogScale = 0.5;
       interactiveRef.current = false;
     } else if (p < 0.4) {
@@ -243,7 +294,8 @@ function Scene({
       );
       t.signScales = Array(signCount).fill(1);
       t.frogX = lerpN(0, FROG_POSITION_X_EXPLORE_SECTION, eased);
-      t.frogScale = lerpN(0.5, 0.35, eased);
+      t.frogY = lerpN(0, -1, eased); // Move frog down
+      t.frogScale = lerpN(0.5, 0.3, eased); // Shrink frog
       interactiveRef.current = false;
     } else if (p < 0.7) {
       // Explore
@@ -257,7 +309,8 @@ function Scene({
       );
       t.signScales = Array(signCount).fill(1);
       t.frogX = FROG_POSITION_X_EXPLORE_SECTION;
-      t.frogScale = 0.35;
+      t.frogY = -1; // Move frog lower
+      t.frogScale = 0.3; // Stay shrunk
 
       interactiveRef.current = true;
     } else if (p < 0.8) {
@@ -288,7 +341,8 @@ function Scene({
         i === quizIdx ? 1 : Math.max(1 - eased * 2, 0),
       );
       t.frogX = lerpN(-4, 2, eased);
-      t.frogScale = 1;
+      t.frogY = lerpN(-1, 0, eased);
+      t.frogScale = lerpN(0.3, 0.225, eased); // Shrink more
 
       interactiveRef.current = false;
     } else {
@@ -309,7 +363,8 @@ function Scene({
         .fill(0)
         .map((_, i) => (i === quizIdx ? 1 : 0));
       t.frogX = 2;
-      t.frogScale = 1;
+      t.frogY = 0;
+      t.frogScale = 0.225; // Smallest size
 
       interactiveRef.current = false;
     }
@@ -331,6 +386,11 @@ function Scene({
       frogRef.current.position.x = THREE.MathUtils.lerp(
         frogRef.current.position.x,
         t.frogX,
+        LERP,
+      );
+      frogRef.current.position.y = THREE.MathUtils.lerp(
+        frogRef.current.position.y,
+        t.frogY,
         LERP,
       );
       frogRef.current.scale.setScalar(
@@ -457,7 +517,7 @@ function Scene({
             onPointerOut={handlePointerOut}
           />
         ))}
-        <FrogModel ref={frogRef} />
+        <FrogModel ref={frogRef} interactive onClick={onFrogClick} />
       </Suspense>
     </>
   );
@@ -469,6 +529,7 @@ type Props = {
   scrollProgressRef: React.RefObject<{ progress: number }>;
   onSignSelect: (id: number | null) => void;
   quizSignId: number;
+  onFrogClick?: () => void;
 };
 
 const CAMERA_CONFIG = {
@@ -486,6 +547,7 @@ export default memo(function LandingCanvas(props: Props) {
       shadows={!IS_MOBILE}
       style={CANVAS_STYLE}
       gl={GL_CONFIG}
+      dpr={[1, 1.5]}
     >
       <Scene {...props} isMobile={IS_MOBILE} />
     </Canvas>

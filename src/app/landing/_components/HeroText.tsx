@@ -1,5 +1,5 @@
-"use client";
 import { useState, useEffect, useRef } from "react";
+import { FiMousePointer, FiRotateCcw, FiMaximize2 } from "react-icons/fi";
 
 const MESSAGES = [
   "Ê! Quay lại học đi! 🎉",
@@ -75,9 +75,9 @@ export default function HeroText({ visible, opacity }: Props) {
       {/* Title above the signs */}
       <h1
         className="mt-16 text-5xl font-bold text-[#1E1E1E] drop-shadow-sm sm:text-6xl md:text-7xl"
-        style={{ fontFamily: "var(--font-caveat)" }}
+        style={{ fontFamily: "var(--font-finger-paint)" }}
       >
-        Học Luật Dễ Mà
+        Hoc Luat De Ma
       </h1>
 
       {/* Speech bubble — appears above the sign cluster (offset from cursor) */}
@@ -95,18 +95,47 @@ export default function HeroText({ visible, opacity }: Props) {
             style={{
               fontFamily: "var(--font-caveat)",
               fontSize: "1rem",
-              animation: "frog-bubble-pop 0.25s cubic-bezier(0.34,1.56,0.64,1) both",
+              animation:
+                "frog-bubble-pop 0.25s cubic-bezier(0.34,1.56,0.64,1) both",
             }}
           >
             {MESSAGES[msgIdx]}
             {/* tail angled toward the sign below-left */}
             <span
               className="absolute top-full border-8 border-transparent border-t-white"
-              style={{ left: "30%", filter: "drop-shadow(0 2px 1px rgba(0,0,0,0.08))" }}
+              style={{
+                left: "30%",
+                filter: "drop-shadow(0 2px 1px rgba(0,0,0,0.08))",
+              }}
             />
           </div>
         </div>
       )}
+
+      {/* Minimal Frog Interaction Guide */}
+      <div 
+        className="absolute top-[68%] left-1/2 flex -translate-x-1/2 items-center gap-4 sm:gap-6 text-[9px] sm:text-[11px] font-medium uppercase tracking-[0.15em] text-[#1E1E1E]/50"
+        style={{ fontFamily: "var(--font-inter), sans-serif" }}
+      >
+        <div className="flex items-center gap-2 transition-opacity hover:opacity-100 cursor-default">
+          <FiMousePointer className="text-[12px]" />
+          <span>Nhấn</span>
+        </div>
+        
+        <div className="h-3 w-[1px] bg-[#1E1E1E]/20" />
+        
+        <div className="flex items-center gap-2 transition-opacity hover:opacity-100 cursor-default">
+          <FiRotateCcw className="text-[12px]" />
+          <span>Xoay</span>
+        </div>
+        
+        <div className="h-3 w-[1px] bg-[#1E1E1E]/20" />
+        
+        <div className="flex items-center gap-2 transition-opacity hover:opacity-100 cursor-default">
+          <FiMaximize2 className="text-[12px]" />
+          <span>Zoom</span>
+        </div>
+      </div>
 
       {/* Spacer pushes scroll hint to bottom */}
       <div className="flex-1" />
