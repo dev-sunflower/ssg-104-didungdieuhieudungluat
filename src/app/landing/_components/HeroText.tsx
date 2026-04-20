@@ -1,5 +1,5 @@
-"use client";
 import { useState, useEffect, useRef } from "react";
+import { FiMousePointer, FiRotateCcw, FiMaximize2 } from "react-icons/fi";
 
 const MESSAGES = [
   "Ê! Quay lại học đi! 🎉",
@@ -111,6 +111,31 @@ export default function HeroText({ visible, opacity }: Props) {
           </div>
         </div>
       )}
+
+      {/* Minimal Frog Interaction Guide */}
+      <div 
+        className="absolute top-[68%] left-1/2 flex -translate-x-1/2 items-center gap-4 sm:gap-6 text-[9px] sm:text-[11px] font-medium uppercase tracking-[0.15em] text-[#1E1E1E]/50"
+        style={{ fontFamily: "var(--font-inter), sans-serif" }}
+      >
+        <div className="flex items-center gap-2 transition-opacity hover:opacity-100 cursor-default">
+          <FiMousePointer className="text-[12px]" />
+          <span>Nhấn</span>
+        </div>
+        
+        <div className="h-3 w-[1px] bg-[#1E1E1E]/20" />
+        
+        <div className="flex items-center gap-2 transition-opacity hover:opacity-100 cursor-default">
+          <FiRotateCcw className="text-[12px]" />
+          <span>Xoay</span>
+        </div>
+        
+        <div className="h-3 w-[1px] bg-[#1E1E1E]/20" />
+        
+        <div className="flex items-center gap-2 transition-opacity hover:opacity-100 cursor-default">
+          <FiMaximize2 className="text-[12px]" />
+          <span>Zoom</span>
+        </div>
+      </div>
 
       {/* Spacer pushes scroll hint to bottom */}
       <div className="flex-1" />

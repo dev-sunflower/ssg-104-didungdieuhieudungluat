@@ -90,6 +90,7 @@ type SceneProps = {
   onSignSelect: (id: number | null) => void;
   isMobile: boolean;
   quizSignId: number;
+  onFrogClick?: () => void;
 };
 
 function Scene({
@@ -97,6 +98,7 @@ function Scene({
   onSignSelect,
   isMobile,
   quizSignId,
+  onFrogClick,
 }: SceneProps) {
   const { camera, clock } = useThree();
 
@@ -246,7 +248,7 @@ function Scene({
       t.signScales = Array(signCount).fill(1);
       t.frogX = lerpN(0, FROG_POSITION_X_EXPLORE_SECTION, eased);
       t.frogY = lerpN(0, -1, eased); // Move frog down
-      t.frogScale = lerpN(0.5, 0.5, eased);
+      t.frogScale = lerpN(0.5, 0.3, eased); // Shrink frog
       interactiveRef.current = false;
     } else if (p < 0.7) {
       // Explore
@@ -261,7 +263,7 @@ function Scene({
       t.signScales = Array(signCount).fill(1);
       t.frogX = FROG_POSITION_X_EXPLORE_SECTION;
       t.frogY = -1; // Move frog lower
-      t.frogScale = 0.5;
+      t.frogScale = 0.3; // Stay shrunk
 
       interactiveRef.current = true;
     } else if (p < 0.8) {
@@ -293,7 +295,7 @@ function Scene({
       );
       t.frogX = lerpN(-4, 2, eased);
       t.frogY = lerpN(-1, 0, eased);
-      t.frogScale = 1;
+      t.frogScale = lerpN(0.3, 0.225, eased); // Shrink more
 
       interactiveRef.current = false;
     } else {
@@ -315,7 +317,7 @@ function Scene({
         .map((_, i) => (i === quizIdx ? 1 : 0));
       t.frogX = 2;
       t.frogY = 0;
-      t.frogScale = 1;
+      t.frogScale = 0.225; // Smallest size
 
       interactiveRef.current = false;
     }
@@ -468,7 +470,7 @@ function Scene({
             onPointerOut={handlePointerOut}
           />
         ))}
-        <FrogModel ref={frogRef} />
+        <FrogModel ref={frogRef} interactive onClick={onFrogClick} />
       </Suspense>
     </>
   );
@@ -480,6 +482,7 @@ type Props = {
   scrollProgressRef: React.RefObject<{ progress: number }>;
   onSignSelect: (id: number | null) => void;
   quizSignId: number;
+  onFrogClick?: () => void;
 };
 
 const CAMERA_CONFIG = {
@@ -497,6 +500,7 @@ export default memo(function LandingCanvas(props: Props) {
       shadows={!IS_MOBILE}
       style={CANVAS_STYLE}
       gl={GL_CONFIG}
+      dpr={[1, 1.5]}
     >
       <Scene {...props} isMobile={IS_MOBILE} />
     </Canvas>
