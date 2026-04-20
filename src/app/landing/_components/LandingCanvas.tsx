@@ -73,6 +73,43 @@ const ARC_ROTATIONS_FULL: [number, number, number][] = ARC_POSITIONS_FULL.map(
   },
 );
 
+const HERO_POSITIONS_MOBILE: [number, number, number][] = Array.from(
+  { length: 4 },
+  (_, i) => {
+    const t = i / 3;
+    const angle = (t - 0.5) * Math.PI * 0.6;
+    const x = Math.sin(angle) * 3;
+    const y = Math.cos(angle) * 1.5;
+    const z = -Math.abs(Math.sin(angle)) * 2;
+    return [x, y, z] as [number, number, number];
+  },
+);
+
+const HERO_ROTATIONS_MOBILE: [number, number, number][] = Array.from(
+  { length: 4 },
+  (_, i) => {
+    const t = i / 3;
+    const angle = (t - 0.5) * Math.PI * 0.6;
+    return [0.02, Math.sin(angle) * 0.38, Math.sin(angle) * 0.32] as [number, number, number];
+  },
+);
+
+const ARC_POSITIONS_MOBILE: [number, number, number][] = Array.from(
+  { length: 4 },
+  (_, i) => {
+    const t = i / 3;
+    const angle = (t - 0.5) * Math.PI * 0.6;
+    return [Math.sin(angle) * 6, 0, Math.cos(angle) * -1 - 2] as [number, number, number];
+  },
+);
+
+const ARC_ROTATIONS_MOBILE: [number, number, number][] = ARC_POSITIONS_MOBILE.map(
+  ([x, , z]) => {
+    const angle = Math.atan2(x, 10 - z);
+    return [0, -angle, 0] as [number, number, number];
+  },
+);
+
 const QUIZ_SIGN_POSITION: [number, number, number] = [-2.75, 0, 2];
 const QUIZ_SIGN_ROTATION: [number, number, number] = [0, 0, 0];
 
@@ -104,19 +141,19 @@ function Scene({
 
   const signIds = isMobile ? SIGN_IDS_MOBILE : SIGN_IDS_FULL;
   const heroPositions = useMemo(
-    () => (isMobile ? HERO_POSITIONS_FULL.slice(0, 4) : HERO_POSITIONS_FULL),
+    () => (isMobile ? HERO_POSITIONS_MOBILE : HERO_POSITIONS_FULL),
     [isMobile],
   );
   const heroRotations = useMemo(
-    () => (isMobile ? HERO_ROTATIONS_FULL.slice(0, 4) : HERO_ROTATIONS_FULL),
+    () => (isMobile ? HERO_ROTATIONS_MOBILE : HERO_ROTATIONS_FULL),
     [isMobile],
   );
   const arcPositions = useMemo(
-    () => (isMobile ? ARC_POSITIONS_FULL.slice(0, 4) : ARC_POSITIONS_FULL),
+    () => (isMobile ? ARC_POSITIONS_MOBILE : ARC_POSITIONS_FULL),
     [isMobile],
   );
   const arcRotations = useMemo(
-    () => (isMobile ? ARC_ROTATIONS_FULL.slice(0, 4) : ARC_ROTATIONS_FULL),
+    () => (isMobile ? ARC_ROTATIONS_MOBILE : ARC_ROTATIONS_FULL),
     [isMobile],
   );
 
@@ -150,14 +187,24 @@ function Scene({
       mouseRef.current.x = e.clientX - window.innerWidth / 2;
       mouseRef.current.y = e.clientY - window.innerHeight / 2;
     };
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        mouseRef.current.x = e.touches[0].clientX - window.innerWidth / 2;
+        mouseRef.current.y = e.touches[0].clientY - window.innerHeight / 2;
+      }
+    };
     const onLeave = () => {
       mouseRef.current = { x: 0, y: 0 };
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseleave", onLeave);
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onLeave);
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onLeave);
     };
   }, []);
 

@@ -68,18 +68,26 @@ const FrogModel = forwardRef<THREE.Group, Props>(({ interactive = false, onClick
       }
     };
 
-    const handlePointerUpGlobal = () => {
+    const handleMouseUpGlobal = () => {
       isDragging.current = false;
     };
 
+    const handleTouchMoveGlobal = (e: TouchEvent) => {
+      if (isDragging.current && e.cancelable) {
+        e.preventDefault(); // Prevent page scroll only when actively dragging the frog
+      }
+    };
+
     canvas.addEventListener("wheel", handleWheel, { passive: false });
+    canvas.addEventListener("touchmove", handleTouchMoveGlobal, { passive: false });
     window.addEventListener("pointermove", handlePointerMoveGlobal);
-    window.addEventListener("pointerup", handlePointerUpGlobal);
+    window.addEventListener("pointerup", handleMouseUpGlobal);
 
     return () => {
       canvas.removeEventListener("wheel", handleWheel);
+      canvas.removeEventListener("touchmove", handleTouchMoveGlobal);
       window.removeEventListener("pointermove", handlePointerMoveGlobal);
-      window.removeEventListener("pointerup", handlePointerUpGlobal);
+      window.removeEventListener("pointerup", handleMouseUpGlobal);
     };
   }, [interactive, hovered, gl]);
 
