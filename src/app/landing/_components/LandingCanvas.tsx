@@ -12,7 +12,7 @@ export type Phase = "hero" | "explore" | "quiz";
 
 // ─── Sign IDs ─────────────────────────────────────────────────────────────────
 
-const SIGN_IDS_FULL = [1, 2, 3, 4, 10, 11, 12, 13];
+const SIGN_IDS_FULL = [1, 2, 3, 4, 5, 6, 7, 8];
 const SIGN_IDS_MOBILE = [1, 2, 3, 4];
 
 // ─── Tarot fan spread — hero phase ────────────────────────────────────────────
@@ -23,7 +23,7 @@ const X_SPREAD = 6; // x của biển ngoài cùng (cũ: 3.8)
 const Y_ARC = 2; // độ cao đỉnh vòng cung (cũ: 2.3)
 const Z_DEPTH = 2.8; // độ sâu biển ngoài cùng (cũ: 2.0)
 
-const FROG_POSITION_X_EXPLORE_SECTION = -7;
+const FROG_POSITION_X_EXPLORE_SECTION = -6;
 
 // 8 signs evenly distributed across the fan arc
 const HERO_POSITIONS_FULL: [number, number, number][] = Array.from(
@@ -167,6 +167,7 @@ function Scene({
     signRotations: heroRotations.map((r) => [...r] as [number, number, number]),
     signScales: Array(signIds.length).fill(1) as number[],
     frogX: 0,
+    frogY: 0,
     frogScale: 0.5,
   });
 
@@ -217,6 +218,7 @@ function Scene({
       );
       t.signScales = Array(signCount).fill(1);
       t.frogX = 0;
+      t.frogY = 0;
       t.frogScale = 0.5;
       interactiveRef.current = false;
     } else if (p < 0.4) {
@@ -243,7 +245,8 @@ function Scene({
       );
       t.signScales = Array(signCount).fill(1);
       t.frogX = lerpN(0, FROG_POSITION_X_EXPLORE_SECTION, eased);
-      t.frogScale = lerpN(0.5, 0.35, eased);
+      t.frogY = lerpN(0, -1, eased); // Move frog down
+      t.frogScale = lerpN(0.5, 0.5, eased);
       interactiveRef.current = false;
     } else if (p < 0.7) {
       // Explore
@@ -257,7 +260,8 @@ function Scene({
       );
       t.signScales = Array(signCount).fill(1);
       t.frogX = FROG_POSITION_X_EXPLORE_SECTION;
-      t.frogScale = 0.35;
+      t.frogY = -1; // Move frog lower
+      t.frogScale = 0.5;
 
       interactiveRef.current = true;
     } else if (p < 0.8) {
@@ -288,6 +292,7 @@ function Scene({
         i === quizIdx ? 1 : Math.max(1 - eased * 2, 0),
       );
       t.frogX = lerpN(-4, 2, eased);
+      t.frogY = lerpN(-1, 0, eased);
       t.frogScale = 1;
 
       interactiveRef.current = false;
@@ -309,6 +314,7 @@ function Scene({
         .fill(0)
         .map((_, i) => (i === quizIdx ? 1 : 0));
       t.frogX = 2;
+      t.frogY = 0;
       t.frogScale = 1;
 
       interactiveRef.current = false;
@@ -331,6 +337,11 @@ function Scene({
       frogRef.current.position.x = THREE.MathUtils.lerp(
         frogRef.current.position.x,
         t.frogX,
+        LERP,
+      );
+      frogRef.current.position.y = THREE.MathUtils.lerp(
+        frogRef.current.position.y,
+        t.frogY,
         LERP,
       );
       frogRef.current.scale.setScalar(

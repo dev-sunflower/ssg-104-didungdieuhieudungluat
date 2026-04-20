@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Inter, Lora, Geist_Mono, Baloo_2 } from "next/font/google";
+import {
+  Inter,
+  Lora,
+  Geist_Mono,
+  Baloo_2,
+  Finger_Paint,
+} from "next/font/google";
 import { Providers } from "./providers";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -29,6 +35,11 @@ const baloo2 = Baloo_2({
   display: "swap",
 });
 
+const fingerPaint = Finger_Paint({
+  variable: "--font-finger-paint",
+  weight: "400",
+});
+
 export const metadata: Metadata = {
   title: "Học Luật Dễ Mà",
   description:
@@ -41,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${inter.variable} ${lora.variable} ${geistMono.variable} ${baloo2.variable} h-full`}
+      className={`${inter.variable} ${lora.variable} ${geistMono.variable} ${baloo2.variable} ${fingerPaint.variable} h-full`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>

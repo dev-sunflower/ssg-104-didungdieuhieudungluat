@@ -75,9 +75,9 @@ export default function HeroText({ visible, opacity }: Props) {
       {/* Title above the signs */}
       <h1
         className="mt-16 text-5xl font-bold text-[#1E1E1E] drop-shadow-sm sm:text-6xl md:text-7xl"
-        style={{ fontFamily: "var(--font-caveat)" }}
+        style={{ fontFamily: "var(--font-finger-paint)" }}
       >
-        Học Luật Dễ Mà
+        Hoc Luat De Ma
       </h1>
 
       {/* Speech bubble — appears above the sign cluster (offset from cursor) */}
@@ -95,14 +95,18 @@ export default function HeroText({ visible, opacity }: Props) {
             style={{
               fontFamily: "var(--font-caveat)",
               fontSize: "1rem",
-              animation: "frog-bubble-pop 0.25s cubic-bezier(0.34,1.56,0.64,1) both",
+              animation:
+                "frog-bubble-pop 0.25s cubic-bezier(0.34,1.56,0.64,1) both",
             }}
           >
             {MESSAGES[msgIdx]}
             {/* tail angled toward the sign below-left */}
             <span
               className="absolute top-full border-8 border-transparent border-t-white"
-              style={{ left: "30%", filter: "drop-shadow(0 2px 1px rgba(0,0,0,0.08))" }}
+              style={{
+                left: "30%",
+                filter: "drop-shadow(0 2px 1px rgba(0,0,0,0.08))",
+              }}
             />
           </div>
         </div>

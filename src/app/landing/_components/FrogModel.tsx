@@ -37,7 +37,7 @@ const FrogModel = forwardRef<THREE.Group>((_, forwardedRef) => {
 
   return (
     <group
-      rotation={[0, 4.5, 0]}
+      rotation={[0, 5, 0]}
       ref={groupRef}
       position={[0, 0, 0]}
       scale={[0, 0, 0]}
