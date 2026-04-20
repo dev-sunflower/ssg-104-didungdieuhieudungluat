@@ -5,7 +5,6 @@ import { Environment } from "@react-three/drei";
 import * as THREE from "three";
 import SignMesh from "./SignMesh";
 import FrogModel from "./FrogModel";
-import BookModel from "./BookModel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -13,7 +12,7 @@ export type Phase = "hero" | "explore" | "quiz";
 
 // ─── Sign IDs ─────────────────────────────────────────────────────────────────
 
-const SIGN_IDS_FULL = [1, 2, 3, 4, 5, 6, 7, 8];
+const SIGN_IDS_FULL = [1, 2, 3, 4, 10, 11, 12, 13];
 const SIGN_IDS_MOBILE = [1, 2, 3, 4];
 
 // ─── Tarot fan spread — hero phase ────────────────────────────────────────────
@@ -26,28 +25,30 @@ const Z_DEPTH = 2.8; // độ sâu biển ngoài cùng (cũ: 2.0)
 
 const FROG_POSITION_X_EXPLORE_SECTION = -7;
 
-const HERO_POSITIONS_FULL: [number, number, number][] = [
-  [-X_SPREAD, -0.8, -Z_DEPTH],
-  [-X_SPREAD * 0.7, Y_ARC * 0.3, -Z_DEPTH * 0.6],
-  [-X_SPREAD * 0.42, Y_ARC * 0.72, -Z_DEPTH * 0.28],
-  [-X_SPREAD * 0.14, Y_ARC, -Z_DEPTH * 0.1],
-  [X_SPREAD * 0.14, Y_ARC, -Z_DEPTH * 0.1],
-  [X_SPREAD * 0.42, Y_ARC * 0.72, -Z_DEPTH * 0.28],
-  [X_SPREAD * 0.7, Y_ARC * 0.3, -Z_DEPTH * 0.6],
-  [X_SPREAD, -0.8, -Z_DEPTH],
-];
+// 8 signs evenly distributed across the fan arc
+const HERO_POSITIONS_FULL: [number, number, number][] = Array.from(
+  { length: 8 },
+  (_, i) => {
+    const t = i / 7; // 0 → 1
+    const angle = (t - 0.5) * Math.PI * 0.72; // ±64.8° total spread
+    const x = Math.sin(angle) * X_SPREAD;
+    const y = Math.cos(angle) * Y_ARC - Y_ARC * 0.05; // slight arc droop
+    const z = -Math.abs(Math.sin(angle)) * Z_DEPTH; // depth at edges
+    return [x, y, z] as [number, number, number];
+  },
+);
 
-// Each card is rotated to "fan" outward, giving tarot spread perspective
-const HERO_ROTATIONS_FULL: [number, number, number][] = [
-  [0.12, -0.4, -0.28],
-  [0.08, -0.25, -0.18],
-  [0.04, -0.13, -0.1],
-  [0.01, -0.04, -0.04],
-  [0.01, 0.04, 0.04],
-  [0.04, 0.13, 0.1],
-  [0.08, 0.25, 0.18],
-  [0.12, 0.4, 0.28],
-];
+// Each sign fans outward matching its x position
+const HERO_ROTATIONS_FULL: [number, number, number][] = Array.from(
+  { length: 8 },
+  (_, i) => {
+    const t = i / 7;
+    const angle = (t - 0.5) * Math.PI * 0.72;
+    const rotZ = Math.sin(angle) * 0.32; // tilt outward
+    const rotY = Math.sin(angle) * 0.38; // face outward slightly
+    return [0.02, rotY, rotZ] as [number, number, number];
+  },
+);
 
 // ─── Arc positions — explore phase ────────────────────────────────────────────
 
@@ -55,8 +56,8 @@ const ARC_POSITIONS_FULL: [number, number, number][] = Array.from(
   { length: 8 },
   (_, i) => {
     const t = i / 7;
-    const angle = (t - 0.5) * Math.PI * 0.8;
-    return [Math.sin(angle) * 8, 0, Math.cos(angle) * -2 - 2] as [
+    const angle = (t - 0.5) * Math.PI * 0.9;
+    return [Math.sin(angle) * 9, 0, Math.cos(angle) * -2 - 2] as [
       number,
       number,
       number,

@@ -1,11 +1,11 @@
 "use client";
 import { forwardRef, useRef, useEffect } from "react";
-import { useLoader, useFrame } from "@react-three/fiber";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
-import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
+import { useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const FROG_SCALE = 3; // model is ~0.5 units, scale up to ~3 units tall
+const GLB_PATH = "/3dassets/FROG_GLB/FROG.glb";
+const FROG_SCALE = 3; // scale to match original display size
 
 const FrogModel = forwardRef<THREE.Group>((_, forwardedRef) => {
   const groupRef = useRef<THREE.Group>(null);
@@ -20,30 +20,15 @@ const FrogModel = forwardRef<THREE.Group>((_, forwardedRef) => {
     }
   }, [forwardedRef]);
 
-  const materials = useLoader(
-    MTLLoader,
-    "/3dassets/FROG_NO_VEST/FROG.mtl",
-    (loader) => {
-      loader.setResourcePath("/3dassets/FROG_NO_VEST/");
-    },
-  );
-
-  const obj = useLoader(
-    OBJLoader,
-    "/3dassets/FROG_NO_VEST/FROG.obj",
-    (loader) => {
-      materials.preload();
-      loader.setMaterials(materials);
-    },
-  );
+  const { scene } = useGLTF(GLB_PATH);
 
   useEffect(() => {
-    obj.traverse((child) => {
+    scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         child.castShadow = true;
       }
     });
-  }, [obj]);
+  }, [scene]);
 
   useFrame(({ clock }) => {
     if (!groupRef.current || groupRef.current.scale.x < 0.05) return;
@@ -57,9 +42,13 @@ const FrogModel = forwardRef<THREE.Group>((_, forwardedRef) => {
       position={[0, 0, 0]}
       scale={[0, 0, 0]}
     >
-      <primitive object={obj} scale={[FROG_SCALE, FROG_SCALE, FROG_SCALE]} />
+      <primitive object={scene} scale={[FROG_SCALE, FROG_SCALE, FROG_SCALE]} />
     </group>
   );
 });
 FrogModel.displayName = "FrogModel";
+
+// Preload the GLB for faster first render
+useGLTF.preload(GLB_PATH);
+
 export default FrogModel;
