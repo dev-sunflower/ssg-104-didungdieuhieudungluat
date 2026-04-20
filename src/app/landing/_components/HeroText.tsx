@@ -77,10 +77,10 @@ export default function HeroText({ visible, opacity }: Props) {
     >
       {/* Title above the signs */}
       <h1
-        className="mt-16 text-5xl font-bold text-[#1E1E1E] drop-shadow-sm sm:text-6xl md:text-7xl"
-        style={{ fontFamily: "var(--font-finger-paint)" }}
+        className="mt-16 text-5xl font-bold text-[#1E1E1E] drop-shadow-sm sm:text-6xl md:text-8xl"
+        style={{ fontFamily: "var(--font-good-dog)" }}
       >
-        Hoc Luat De Ma
+        Học Luật Dễ Mà
       </h1>
 
       {/* Speech bubble wrapper — position updated via Ref for performance */}
@@ -97,7 +97,9 @@ export default function HeroText({ visible, opacity }: Props) {
           style={{
             fontFamily: "var(--font-caveat)",
             fontSize: "1rem",
-            animation: bubbleVisible ? "frog-bubble-pop 0.25s cubic-bezier(0.34,1.56,0.64,1) both" : "none",
+            animation: bubbleVisible
+              ? "frog-bubble-pop 0.25s cubic-bezier(0.34,1.56,0.64,1) both"
+              : "none",
           }}
         >
           {MESSAGES[msgIdx]}

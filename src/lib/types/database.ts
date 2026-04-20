@@ -61,3 +61,12 @@ export interface ExamSession {
   // Joined
   license_types?: LicenseType
 }
+
+export interface GameSession {
+  id: string
+  player_name: string
+  score: number
+  questions_answered: number
+  hearts_remaining: number
+  created_at: string
+}

@@ -6,6 +6,7 @@ import {
   Baloo_2,
   Finger_Paint,
 } from "next/font/google";
+import localFont from "next/font/local";
 import { Providers } from "./providers";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -40,6 +41,12 @@ const fingerPaint = Finger_Paint({
   weight: "400",
 });
 
+const goodDog = localFont({
+  src: "../fonts/SVN-Good Dog.ttf",
+  variable: "--font-good-dog",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Học Luật Dễ Mà",
   description:
@@ -52,7 +59,7 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${inter.variable} ${lora.variable} ${geistMono.variable} ${baloo2.variable} ${fingerPaint.variable} h-full`}
+      className={`${inter.variable} ${lora.variable} ${geistMono.variable} ${baloo2.variable} ${fingerPaint.variable} ${goodDog.variable} h-full`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
