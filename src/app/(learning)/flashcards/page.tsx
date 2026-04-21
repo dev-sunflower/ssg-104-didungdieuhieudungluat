@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Button, Spinner, Label, ListBox, Select } from '@heroui/react'
-import { LuShuffle, LuInbox } from 'react-icons/lu'
+import { LuShuffle, LuInbox, LuRotateCcw } from 'react-icons/lu'
 import FlashCard from '@/components/ui/FlashCard'
 import { createClient } from '@/lib/supabase/client'
 import type { LicenseType, Question } from '@/lib/types/database'
@@ -16,6 +16,8 @@ export default function FlashcardsPage() {
   const [topics, setTopics] = useState<string[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [loading, setLoading] = useState(true)
+  // Incrementing this key forces FlashCard to remount (clears flipped state)
+  const [resetKey, setResetKey] = useState(0)
 
   useEffect(() => {
     supabase
@@ -49,7 +51,7 @@ export default function FlashcardsPage() {
       .order('question_number')
     if (selectedTopic !== 'all') query = query.eq('topic', selectedTopic)
     const { data } = await query
-    if (data) { setQuestions(data); setCurrentIndex(0) }
+    if (data) { setQuestions(data); setCurrentIndex(0); setResetKey((k) => k + 1) }
     setLoading(false)
   }, [supabase, a1Type, selectedTopic])
 
@@ -58,6 +60,12 @@ export default function FlashcardsPage() {
   const shuffle = () => {
     setQuestions((prev) => [...prev].sort(() => Math.random() - 0.5))
     setCurrentIndex(0)
+    setResetKey((k) => k + 1)
+  }
+
+  const reset = () => {
+    setCurrentIndex(0)
+    setResetKey((k) => k + 1)
   }
 
   return (
@@ -105,6 +113,15 @@ export default function FlashcardsPage() {
             >
               <LuShuffle size={14} className="mr-1" /> Xáo trộn
             </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onPress={reset}
+              title="Về câu 1 và đặt lại thẻ"
+              className="whitespace-nowrap rounded-2xl border-[#1E1E1E]/14 py-2.5 text-sm text-text-secondary"
+            >
+              <LuRotateCcw size={14} />
+            </Button>
             <div className="whitespace-nowrap rounded-2xl border border-[#F4A616]/45 bg-[#FFF4D6] px-3 py-2.5 text-sm font-semibold text-[#1E1E1E]">
               {questions.length} câu
             </div>
@@ -133,6 +150,7 @@ export default function FlashcardsPage() {
           </div>
         ) : (
           <FlashCard
+            key={resetKey}
             question={questions[currentIndex]}
             current={currentIndex + 1}
             total={questions.length}

@@ -4,9 +4,10 @@ import { useState } from "react";
 type Props = {
   onStart: (name: string) => void;
   loading: boolean;
+  loadingAssets?: boolean;
 };
 
-export default function NameEntryScreen({ onStart, loading }: Props) {
+export default function NameEntryScreen({ onStart, loading, loadingAssets }: Props) {
   const [name, setName] = useState("");
 
   return (
@@ -52,7 +53,7 @@ export default function NameEntryScreen({ onStart, loading }: Props) {
           onClick={() => onStart(name.trim())}
           className="mt-4 w-full rounded-2xl bg-[#F4A616] py-3 font-bold text-[#1E1E1E] transition hover:bg-[#e59b11] disabled:opacity-40"
         >
-          {loading ? "Đang tải câu hỏi..." : "Bắt đầu"}
+          {loadingAssets ? "Đang tải hình ảnh..." : loading ? "Đang tải câu hỏi..." : "Bắt đầu"}
         </button>
       </div>
 

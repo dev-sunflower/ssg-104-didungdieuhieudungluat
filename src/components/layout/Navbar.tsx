@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@heroui/react";
-import { useAuth } from "@/contexts/AuthContext";
 import Image from "next/image";
 import type { IconType } from "react-icons";
 import {
@@ -14,8 +12,6 @@ import {
   LuFileText,
   LuGamepad2,
   LuTriangleAlert,
-  LuSettings,
-  LuArrowLeft,
 } from "react-icons/lu";
 
 // ─── Nav structure ────────────────────────────────────────────────────────────
@@ -262,7 +258,6 @@ function MobileSheet({
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, role, signOut } = useAuth();
   const [mobileSheet, setMobileSheet] = useState<string | null>(null);
 
   useEffect(() => {
@@ -325,49 +320,6 @@ export default function Navbar() {
             </nav>
           </div>
 
-          {/* Auth */}
-          {user ? (
-            <div className="flex items-center gap-3">
-              {role === "admin" && (
-                <Link
-                  href="/admin"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-border-strong bg-bg-subtle text-text-secondary hover:text-text-primary hover:bg-bg-card transition-colors"
-                >
-                  <LuSettings size={13} />
-                  Admin
-                </Link>
-              )}
-              <Link
-                href="/profile"
-                className="flex items-center gap-2 group px-2 py-1.5 rounded-xl hover:bg-bg-subtle transition-colors"
-                title="Quản lý hồ sơ"
-              >
-                <span className="w-6 h-6 rounded-full bg-brand flex items-center justify-center text-[10px] text-ivory font-serif font-medium">
-                  {(user.email || "U").charAt(0).toUpperCase()}
-                </span>
-                <span className="text-sm font-medium text-text-secondary group-hover:text-text-primary transition-colors max-w-[140px] truncate">
-                  {user.email}
-                </span>
-              </Link>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl text-xs border-border text-text-secondary hover:bg-bg-subtle"
-                onPress={signOut}
-              >
-                Đăng xuất
-              </Button>
-            </div>
-          ) : (
-            <Link href="/auth/login">
-              <Button
-                size="sm"
-                className="bg-brand text-ivory rounded-xl text-sm font-medium px-5"
-              >
-                Đăng nhập
-              </Button>
-            </Link>
-          )}
         </div>
       </header>
 
@@ -386,38 +338,6 @@ export default function Navbar() {
           hocluatdema
         </Link>
 
-        {user ? (
-          <div className="flex items-center gap-2">
-            {role === "admin" && (
-              <Link
-                href="/questions"
-                className="flex items-center gap-1 text-[11px] font-medium text-text-secondary px-2.5 py-1.5 rounded-lg border border-border-strong bg-bg-subtle"
-              >
-                <LuSettings size={12} />
-                Admin
-              </Link>
-            )}
-            <Link
-              href="/profile"
-              className="w-7 h-7 rounded-full bg-bg-subtle border border-border flex items-center justify-center text-[10px] text-text-secondary font-medium font-serif"
-            >
-              {(user.email || "U").charAt(0).toUpperCase()}
-            </Link>
-            <button
-              onClick={signOut}
-              className="text-[11px] text-text-secondary px-3 py-1.5 rounded-lg border border-border bg-bg-card shadow-sm"
-            >
-              Đăng xuất
-            </button>
-          </div>
-        ) : (
-          <Link
-            href="/auth/login"
-            className="text-xs font-medium text-ivory bg-brand px-3 py-1.5 rounded-lg"
-          >
-            Đăng nhập
-          </Link>
-        )}
       </header>
 
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg-page/95 backdrop-blur-md border-t border-border safe-area-bottom">
