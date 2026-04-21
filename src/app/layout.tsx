@@ -65,6 +65,13 @@ export default function RootLayout({
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />
+        {/* Global copyright badge */}
+        <div className="fixed bottom-3 right-3 z-[9999] pointer-events-none select-none">
+          <p className="rounded-lg bg-black/20 px-2 py-1 text-[10px] font-medium text-white/60 backdrop-blur-sm">
+            signs: designed by{" "}
+            <span className="text-white/80">Nydmeu</span>
+          </p>
+        </div>
       </body>
     </html>
   );
