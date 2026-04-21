@@ -39,8 +39,7 @@ export default function GameScreen({ phase, frame, score, hearts }: Props) {
 
       {/* Animation frame */}
       <div
-        className="relative w-full overflow-hidden rounded-3xl border border-[#1E1E1E]/10 bg-[#F5F0E8]"
-        style={{ height: "720px" }}
+        className="relative w-full overflow-hidden rounded-3xl border border-[#1E1E1E]/10 bg-[#F5F0E8] aspect-video"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

@@ -108,6 +108,21 @@ export default function RoadSignsPage() {
     if (data) setLeaderboard(data);
   }, [supabase]);
 
+  // Preload all animation frames on mount so playback is smooth
+  useEffect(() => {
+    for (let i = 1; i <= FRAME_COUNT; i++) {
+      const padded = String(i).padStart(4, "0");
+      [
+        `/3dassets/animations/green_light/drive_green${padded}.png`,
+        `/3dassets/animations/red_light/drive_red${padded}.png`,
+        `/3dassets/animations/normally_drive/normally_drive${padded}.png`,
+      ].forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    }
+  }, []);
+
   // Fetch leaderboard on mount
   useEffect(() => {
     fetchLeaderboard();
