@@ -31,6 +31,7 @@ export default function RoadSignsPage() {
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [leaderboard, setLeaderboard] = useState<GameSession[]>([]);
+  const [assetsReady, setAssetsReady] = useState(false);
 
   // Refs to read latest values inside callbacks without stale closures
   const heartsRef = useRef(hearts);
@@ -76,7 +77,8 @@ export default function RoadSignsPage() {
     }
   }, [phase, play, pause, reset]);
 
-  // Advance question index each time a new red cycle begins
+  // Pick a random next question each time a correct-answer red cycle begins
+  // (animating-drive → animating-red means the user just answered correctly)
   const prevPhaseRef = useRef<GamePhase>("name-entry");
   useEffect(() => {
     if (
@@ -84,7 +86,14 @@ export default function RoadSignsPage() {
       prevPhaseRef.current === "animating-drive" &&
       questions.length > 0
     ) {
-      setQIndex((i) => (i + 1) % questions.length);
+      // Random pick — same behaviour as wrong-answer path, keeps game unpredictable
+      setQIndex((current) => {
+        if (questions.length === 1) return 0;
+        let next: number;
+        do { next = Math.floor(Math.random() * questions.length); }
+        while (next === current);
+        return next;
+      });
     }
     prevPhaseRef.current = phase;
   }, [phase, questions.length]);
@@ -108,19 +117,30 @@ export default function RoadSignsPage() {
     if (data) setLeaderboard(data);
   }, [supabase]);
 
-  // Preload all animation frames on mount so playback is smooth
+  // Preload all animation frames on mount — wait for every image to fully load
+  // before allowing the game to start, so no frame is ever missing during playback.
   useEffect(() => {
+    const srcs: string[] = [];
     for (let i = 1; i <= FRAME_COUNT; i++) {
       const padded = String(i).padStart(4, "0");
-      [
+      srcs.push(
         `/3dassets/animations/green_light/drive_green${padded}.png`,
         `/3dassets/animations/red_light/drive_red${padded}.png`,
         `/3dassets/animations/normally_drive/normally_drive${padded}.png`,
-      ].forEach((src) => {
-        const img = new Image();
-        img.src = src;
-      });
+      );
     }
+
+    let settled = 0;
+    const total = srcs.length;
+    srcs.forEach((src) => {
+      const img = new Image();
+      // Count both onload and onerror so we never get stuck if one image 404s
+      img.onload = img.onerror = () => {
+        settled++;
+        if (settled === total) setAssetsReady(true);
+      };
+      img.src = src;
+    });
   }, []);
 
   // Fetch leaderboard on mount
@@ -185,7 +205,8 @@ export default function RoadSignsPage() {
         await fetchLeaderboard();
         setPhase("game-over");
       } else {
-        // Remove wrong question from pool, pick a random different one
+        // Remove wrong question from pool, pick a random different one.
+        // Skip re-playing the red animation — frame stays at drive_red0008.
         setQuestions((prev) => {
           const filtered = prev.filter((_, idx) => idx !== qIndex);
           if (filtered.length === 0) return prev; // safety: keep at least 1
@@ -193,11 +214,28 @@ export default function RoadSignsPage() {
           setQIndex(nextIdx);
           return filtered;
         });
-        setPhase("animating-red");
+        setPhase("question-open");
       }
     },
     [questions, qIndex, supabase, fetchLeaderboard],
   );
+
+  const handleQuit = useCallback(async () => {
+    pause();
+    const { data } = await supabase
+      .from("game_sessions")
+      .insert({
+        player_name: playerNameRef.current,
+        score: scoreRef.current,
+        questions_answered: questionsAnsweredRef.current,
+        hearts_remaining: heartsRef.current,
+      })
+      .select("id")
+      .single();
+    if (data) setSessionId(data.id);
+    await fetchLeaderboard();
+    setPhase("game-over");
+  }, [supabase, fetchLeaderboard, pause]);
 
   const handleRestart = useCallback(() => {
     setPhase("name-entry");
@@ -206,7 +244,13 @@ export default function RoadSignsPage() {
   // ── Render ──────────────────────────────────────────────────────────
   function renderLeft() {
     if (phase === "name-entry") {
-      return <NameEntryScreen onStart={handleStart} loading={loadingQuestions} />;
+      return (
+        <NameEntryScreen
+          onStart={handleStart}
+          loading={!assetsReady || loadingQuestions}
+          loadingAssets={!assetsReady}
+        />
+      );
     }
     if (phase === "game-over") {
       return (
@@ -221,12 +265,15 @@ export default function RoadSignsPage() {
       );
     }
     return (
-      <div className="relative">
-        <GameScreen phase={phase} frame={frame} score={score} hearts={hearts} />
+      <GameScreen phase={phase} frame={frame} score={score} hearts={hearts} onQuit={handleQuit}>
         {phase === "question-open" && questions[qIndex] && (
-          <QuestionModal question={questions[qIndex]} onAnswer={handleAnswer} />
+          <QuestionModal
+            key={questions[qIndex].id}
+            question={questions[qIndex]}
+            onAnswer={handleAnswer}
+          />
         )}
-      </div>
+      </GameScreen>
     );
   }
 
