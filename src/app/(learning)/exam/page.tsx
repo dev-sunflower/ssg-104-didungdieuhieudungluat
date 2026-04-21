@@ -396,7 +396,7 @@ function ExamContent() {
                   style={{ backgroundColor: mode.accentColor }}
                 >
                   {loading && mode.id === activeMode?.id ? (
-                    <Spinner size="sm" color="white" />
+                    <Spinner size="sm" />
                   ) : (
                     mode.icon
                   )}

@@ -117,7 +117,7 @@ export default function FlashcardsPage() {
               variant="outline"
               size="lg"
               onPress={reset}
-              title="Về câu 1 và đặt lại thẻ"
+              aria-label="Về câu 1 và đặt lại thẻ"
               className="whitespace-nowrap rounded-2xl border-[#1E1E1E]/14 py-2.5 text-sm text-text-secondary"
             >
               <LuRotateCcw size={14} />
