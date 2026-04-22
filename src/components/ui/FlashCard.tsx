@@ -68,7 +68,7 @@ export default function FlashCard({
   }
 
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div className="flex w-full flex-col gap-5 overflow-clip">
       {/* Progress header */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
@@ -108,7 +108,7 @@ export default function FlashCard({
 
       {/* Card — touch handlers here so the whole card is swipeable */}
       <div
-        className="flashcard-scene min-h-[280px] w-full cursor-pointer select-none md:min-h-[320px]"
+        className="flashcard-scene min-h-[380px] w-full cursor-pointer select-none md:min-h-[460px]"
         onClick={() => {
           // Only flip on tap, not at the end of a swipe gesture
           if (!isSwiping.current) setFlipped((f) => !f);
@@ -124,24 +124,26 @@ export default function FlashCard({
           {/* Front */}
           <Card className="flashcard-face overflow-hidden rounded-3xl border border-[#1E1E1E]/10 bg-white shadow-[0_14px_36px_rgba(30,30,30,0.08)]">
             <div className="h-1.5 bg-[#F4A616]" />
-            <Card.Content className="flex h-full flex-col justify-between p-5 md:p-7">
-              <div className="flex flex-1 flex-col justify-center gap-4">
+            <Card.Content className="flex h-full flex-col justify-between p-6 md:p-10">
+              <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
                 {question.image_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={question.image_url}
                     alt="Hình ảnh câu hỏi"
-                    className="mx-auto max-h-32 rounded-xl bg-[#FFFCF2] object-contain"
+                    className="mx-auto max-h-40 rounded-2xl bg-[#FFFCF2] object-contain shadow-sm"
                   />
                 )}
-                {question.question_number && (
-                  <p className="text-xs font-mono text-text-tertiary">
-                    Câu #{question.question_number}
+                <div className="space-y-2">
+                  {question.question_number && (
+                    <p className="text-xs font-bold tracking-wider text-[#F4A616] uppercase">
+                      Câu #{question.question_number}
+                    </p>
+                  )}
+                  <p className="text-lg font-bold leading-relaxed text-text-primary md:text-2xl">
+                    {question.content}
                   </p>
-                )}
-                <p className="text-base font-medium leading-relaxed text-text-primary md:text-lg">
-                  {question.content}
-                </p>
+                </div>
               </div>
               <div className="mt-4 flex items-center justify-center gap-2 border-t border-[#1E1E1E]/10 pt-4 text-xs text-text-tertiary">
                 Nhấn để xem đáp án
@@ -152,18 +154,18 @@ export default function FlashCard({
           {/* Back */}
           <Card className="flashcard-face flashcard-back overflow-hidden rounded-3xl border border-[#1E1E1E]/10 bg-white shadow-[0_14px_36px_rgba(30,30,30,0.08)]">
             <div className="h-1.5 bg-[#4ECDC4]" />
-            <Card.Content className="flex h-full flex-col justify-between p-5 md:p-7">
-              <div className="flex flex-1 flex-col justify-center gap-4">
-                <div className="flex items-start gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#4ECDC4] text-sm font-medium text-white">
+            <Card.Content className="flex h-full flex-col justify-between p-6 md:p-10">
+              <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
+                <div className="flex flex-col items-center gap-4">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#4ECDC4] text-lg font-bold text-white shadow-lg shadow-[#4ECDC4]/20">
                     {question.correct_answer}
                   </span>
-                  <p className="text-base font-medium leading-relaxed text-text-primary">
+                  <p className="text-lg font-bold leading-relaxed text-text-primary md:text-2xl">
                     {correctOption?.text}
                   </p>
                 </div>
                 {question.explanation && (
-                  <div className="rounded-2xl border border-[#1E1E1E]/10 bg-[#FFF4D6] p-4 text-sm leading-relaxed text-text-secondary">
+                  <div className="max-w-md rounded-2xl border border-[#1E1E1E]/10 bg-[#FFF4D6] p-5 text-sm leading-relaxed text-text-secondary shadow-sm">
                     💡 {question.explanation}
                   </div>
                 )}

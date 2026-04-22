@@ -104,25 +104,25 @@ export default function FlashcardsPage() {
             </Select.Popover>
           </Select>
 
-          <div className="mt-3 flex items-center gap-2">
+          <div className="mt-3 flex items-center gap-1.5">
             <Button
               variant="outline"
               size="lg"
               onPress={shuffle}
-              className="flex-1 whitespace-nowrap rounded-2xl border-[#1E1E1E]/14 py-2.5 text-sm text-text-secondary"
+              className="flex-1 whitespace-nowrap rounded-2xl border-[#1E1E1E]/14 px-2 py-2 text-xs text-text-secondary"
             >
-              <LuShuffle size={14} className="mr-1" /> Xáo trộn
+              <LuShuffle size={13} className="mr-1" /> Xáo trộn
             </Button>
             <Button
               variant="outline"
               size="lg"
               onPress={reset}
               aria-label="Về câu 1 và đặt lại thẻ"
-              className="whitespace-nowrap rounded-2xl border-[#1E1E1E]/14 py-2.5 text-sm text-text-secondary"
+              className="shrink-0 whitespace-nowrap rounded-2xl border-[#1E1E1E]/14 px-2.5 py-2 text-text-secondary"
             >
-              <LuRotateCcw size={14} />
+              <LuRotateCcw size={13} />
             </Button>
-            <div className="whitespace-nowrap rounded-2xl border border-[#F4A616]/45 bg-[#FFF4D6] px-3 py-2.5 text-sm font-semibold text-[#1E1E1E]">
+            <div className="shrink-0 whitespace-nowrap rounded-2xl border border-[#F4A616]/45 bg-[#FFF4D6] px-2 py-2 text-xs font-bold text-[#1E1E1E]">
               {questions.length} câu
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function FlashcardsPage() {
       </div>
 
       {/* ── Right content ── */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 overflow-clip">
         {loading ? (
           <div className="flex flex-col items-center justify-center gap-3 py-20">
             <Spinner size="lg" />

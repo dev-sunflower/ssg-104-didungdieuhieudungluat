@@ -18,6 +18,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (min-width: 768px) {
+  body {
+    overflow-x: hidden;
+  }
+}
+
 /* ─── Safe area for bottom nav on iOS ──────────────────── */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);

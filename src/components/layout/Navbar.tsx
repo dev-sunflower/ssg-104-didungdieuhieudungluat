@@ -5,14 +5,10 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import type { IconType } from "react-icons";
-import {
-  LuHouse,
-  LuBookOpen,
-  LuLayers,
-  LuFileText,
-  LuGamepad2,
-  LuTriangleAlert,
-} from "react-icons/lu";
+import { LuHouse, LuBookOpen, LuLayers, LuFileText, LuGamepad2, LuTriangleAlert } from 'react-icons/lu'
+import { FaFacebook } from 'react-icons/fa6'
+import { SiTiktok } from 'react-icons/si'
+import { socialLinks } from '@/lib/socialLinks'
 
 // ─── Nav structure ────────────────────────────────────────────────────────────
 
@@ -331,13 +327,40 @@ export default function Navbar() {
           <Image
             src="/logo.webp"
             alt="Logo"
-            width={36}
-            height={36}
-            className="rounded-xl"
+            width={32}
+            height={32}
+            className="rounded-lg"
           />
-          hocluatdema
+          <span className="text-sm">hocluatdema</span>
         </Link>
 
+        {/* Mobile social & copyright block */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 border-r border-border pr-3">
+            <a
+              href={socialLinks.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-text-tertiary transition-colors hover:text-[#1877F2]"
+              title="Facebook"
+            >
+              <FaFacebook size={18} />
+            </a>
+            <a
+              href={socialLinks.tiktok}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-text-tertiary transition-colors hover:text-text-primary"
+              title="TikTok"
+            >
+              <SiTiktok size={17} />
+            </a>
+          </div>
+          <div className="text-[9px] font-medium text-text-tertiary leading-none text-right">
+            signs: <br />
+            <span className="text-text-secondary">Nydmeu</span>
+          </div>
+        </div>
       </header>
 
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg-page/95 backdrop-blur-md border-t border-border safe-area-bottom">
