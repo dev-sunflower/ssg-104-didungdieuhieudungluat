@@ -1,21 +1,34 @@
-import Navbar from '@/components/layout/Navbar'
+import Navbar from "@/components/layout/Navbar";
 
-export default function MiniGamesLayout({ children }: { children: React.ReactNode }) {
+export default function MiniGamesLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-[linear-gradient(180deg,#FFF4D6_0%,#FFF9EA_36%,#FFFFFF_100%)]">
+    <div className="relative min-h-screen flex flex-col bg-[linear-gradient(180deg,#FFF4D6_0%,#FFF9EA_36%,#FFFFFF_100%)]">
       {/* Blob decorations */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
           className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] animate-blob rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(255,226,154,0.55) 0%, rgba(255,226,154,0) 70%)' }}
+          style={{
+            background:
+              "radial-gradient(circle, rgba(255,226,154,0.55) 0%, rgba(255,226,154,0) 70%)",
+          }}
         />
         <div
           className="absolute top-[15%] -right-[10%] w-[42vw] h-[42vw] animate-blob animation-delay-2000 rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(244,166,22,0.2) 0%, rgba(244,166,22,0) 70%)' }}
+          style={{
+            background:
+              "radial-gradient(circle, rgba(244,166,22,0.2) 0%, rgba(244,166,22,0) 70%)",
+          }}
         />
         <div
           className="absolute -bottom-[15%] left-[20%] w-[55vw] h-[55vw] animate-blob animation-delay-4000 rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(78,205,196,0.15) 0%, rgba(78,205,196,0) 70%)' }}
+          style={{
+            background:
+              "radial-gradient(circle, rgba(78,205,196,0.15) 0%, rgba(78,205,196,0) 70%)",
+          }}
         />
         {/* Noise texture */}
         <div
@@ -32,5 +45,5 @@ export default function MiniGamesLayout({ children }: { children: React.ReactNod
         {children}
       </main>
     </div>
-  )
+  );
 }

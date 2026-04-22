@@ -278,7 +278,7 @@ export default function RoadSignsPage() {
   }
 
   return (
-    <div className="mx-auto grid grid-cols-1 gap-6 lg:grid-cols-[1fr_300px]">
+    <div className="mx-auto grid max-w-screen-2xl grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
       <div>{renderLeft()}</div>
       <div className="lg:sticky lg:top-6 lg:self-start">
         <Leaderboard entries={leaderboard} highlightId={sessionId ?? undefined} />

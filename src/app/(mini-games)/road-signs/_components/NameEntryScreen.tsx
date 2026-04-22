@@ -7,11 +7,15 @@ type Props = {
   loadingAssets?: boolean;
 };
 
-export default function NameEntryScreen({ onStart, loading, loadingAssets }: Props) {
+export default function NameEntryScreen({
+  onStart,
+  loading,
+  loadingAssets,
+}: Props) {
   const [name, setName] = useState("");
 
   return (
-    <div className="relative flex flex-col items-center justify-center gap-6 py-10 overflow-hidden">
+    <div className="relative flex flex-col items-center justify-center gap-6 py-10">
       {/* Blob decorations */}
       <div className="pointer-events-none absolute -top-8 -left-8 h-40 w-40 rounded-full bg-[#FFE29A]/60 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-8 -right-8 h-32 w-32 rounded-full bg-[#4ECDC4]/20 blur-2xl" />
@@ -53,7 +57,11 @@ export default function NameEntryScreen({ onStart, loading, loadingAssets }: Pro
           onClick={() => onStart(name.trim())}
           className="mt-4 w-full rounded-2xl bg-[#F4A616] py-3 font-bold text-[#1E1E1E] transition hover:bg-[#e59b11] disabled:opacity-40"
         >
-          {loadingAssets ? "Đang tải hình ảnh..." : loading ? "Đang tải câu hỏi..." : "Bắt đầu"}
+          {loadingAssets
+            ? "Đang tải hình ảnh..."
+            : loading
+              ? "Đang tải câu hỏi..."
+              : "Bắt đầu"}
         </button>
       </div>
 
@@ -69,7 +77,9 @@ export default function NameEntryScreen({ onStart, loading, loadingAssets }: Pro
             className="flex flex-col items-center gap-0.5 rounded-2xl border border-[#F4A616]/30 bg-[linear-gradient(135deg,#FFF4D6,#FFE8A8)] px-4 py-3 text-center shadow-sm"
           >
             <span className="text-2xl">{pill.icon}</span>
-            <span className="text-sm font-bold text-[#1E1E1E]">{pill.value}</span>
+            <span className="text-sm font-bold text-[#1E1E1E]">
+              {pill.value}
+            </span>
             <span className="text-[10px] text-[#1E1E1E]/50">{pill.label}</span>
           </div>
         ))}
@@ -81,23 +91,38 @@ export default function NameEntryScreen({ onStart, loading, loadingAssets }: Pro
         <ul className="flex flex-col gap-2 text-xs leading-relaxed text-[#1E1E1E]/70">
           <li className="flex gap-2">
             <span>🟢</span>
-            <span>Trả lời <strong className="text-[#1E1E1E]">đúng</strong> → đèn xanh, xe qua, +5 điểm</span>
+            <span>
+              Trả lời <strong className="text-[#1E1E1E]">đúng</strong> → đèn
+              xanh, xe qua, +5 điểm
+            </span>
           </li>
           <li className="flex gap-2">
             <span>🔴</span>
-            <span>Trả lời <strong className="text-[#1E1E1E]">sai</strong> → câu đó bị loại, random câu mới</span>
+            <span>
+              Trả lời <strong className="text-[#1E1E1E]">sai</strong> → câu đó
+              bị loại, random câu mới
+            </span>
           </li>
           <li className="flex gap-2">
             <span>💔</span>
-            <span>Sai <strong className="text-[#1E1E1E]">5 câu thường</strong> liên tiếp mất 1 mạng</span>
+            <span>
+              Sai <strong className="text-[#1E1E1E]">5 câu thường</strong> liên
+              tiếp mất 1 mạng
+            </span>
           </li>
           <li className="flex gap-2">
             <span>⚡</span>
-            <span><strong className="text-[#1E1E1E]">Câu điểm liệt</strong> — sai là mất 1 mạng ngay, đúng +20 điểm</span>
+            <span>
+              <strong className="text-[#1E1E1E]">Câu điểm liệt</strong> — sai là
+              mất 1 mạng ngay, đúng +20 điểm
+            </span>
           </li>
           <li className="flex gap-2">
             <span>💀</span>
-            <span>Hết <strong className="text-[#1E1E1E]">5 mạng</strong> → kết thúc, ghi bảng xếp hạng</span>
+            <span>
+              Hết <strong className="text-[#1E1E1E]">5 mạng</strong> → kết thúc,
+              ghi bảng xếp hạng
+            </span>
           </li>
         </ul>
       </div>
